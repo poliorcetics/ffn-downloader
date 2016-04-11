@@ -9,6 +9,7 @@ Contains all the constants used in the second version of the FFN-DOWNLOADER.
  - INTRO
  - ROOT_URL
  - HEADER
+ - ASK_URL
 """
 
 INTRO = """ -- FFN-DOWNLOADER --
@@ -48,4 +49,13 @@ HEADER = """<!DOCTYPE html>
     </style>
 </head>
 <body>
+"""
+
+ASK_URL = """
+Please enter the URL of the first chapter of the wanted story.
+The URL should have the following format:
+https://www.fanfiction.net/s/[STORY_ID]/1/[NAME]
+Like in this:
+https://www.fanfiction.net/s/4641394/1/The-Substitute
+For the [NAME], replace spaces ' ' by '-' if needed.
 """
