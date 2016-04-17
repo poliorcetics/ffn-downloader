@@ -202,8 +202,8 @@ def main(url=None) -> (bool):
         story = insert_title(story, chapters, chap_num)
 
         # Write the chapter
-        chapter_file = open('%s%s%s.html' % (story_title, os.sep,
-                                             chapters[chap_num - 1]),
+        chapter_file = open('%s_%s%s%s.html' % (story_id, story_title, os.sep,
+                                                chapters[chap_num - 1]),
                             'w', encoding='utf-8')
         chapter_file.write(insert_header(format_story(story)))
         chapter_file.close()
@@ -214,13 +214,13 @@ def main(url=None) -> (bool):
         full_story += story
 
     # Open the file used to gather the full story and write it
-    full_file = open('%s_%s%s%s.html' % (story_id, story_title,
-                                         os.sep, story_title),
+    full_file = open('%s_%s%s%s_%s.html' % (story_id, story_title,
+                                         os.sep, story_id, story_title),
                      'w', encoding='utf-8')
     full_file.write(insert_header(format_story(full_story)))
     full_file.close()
 
-    print('DONE -- %s.html' % story_title)
+    print('DONE -- %s_%s.html' % (story_id, story_title))
 
     return True
 
