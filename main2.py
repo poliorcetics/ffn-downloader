@@ -176,10 +176,13 @@ def main(url=None) -> (bool):
     chapters = get_chapters_and_story(first_page, story_id,
                                       chapter, story_title)[0]
 
+    # Display the number of chapter
+    print("\n-- Number of chapter(s): %s" % len(chapters))
+
     full_story = ""
 
     # Display the current directory and create a new one to save the story
-    print('\nCurrent working directory: %s\n' % os.getcwd())
+    print('-- Current working directory: %s\n' % os.getcwd())
     try:
         os.mkdir("%s_%s" % (story_id, story_title))
     except:
