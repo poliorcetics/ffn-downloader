@@ -142,17 +142,28 @@ def get_chapters_and_story(page: str, story_id: int,
     return chapters, story
 
 
-def main():
+def main(url=None) -> (Bool):
+    """Main function, do the real work.
 
-    print(c.INTRO)
+ Parameter
+- url=None          - str - the url to use if you don't want to type it or use
+                            the function into another program.
 
-    # Get the url of the first chapter
-    print(c.ASK_URL)
-    try:
-        url = input('> ')
-    except Exception as e:
-        print('\nThere was an error:\n%s' % e)
-        return False
+ Return
+- True              - No error,
+- False             - There was an unexpected error, please file a bug report.
+"""
+
+    if not (url is None):
+        print(c.INTRO)
+
+        # Get the url of the first chapter
+        print(c.ASK_URL)
+        try:
+            url = input('> ')
+        except Exception as e:
+            print('\nThere was an error:\n%s' % e)
+            return False
 
     # Gather the useful informations about the story.
     story_id, chapter, story_title = get_story_infos(url)
@@ -170,7 +181,7 @@ def main():
     # Display the current directory and create a new one to save the story
     print('\nCurrent working directory: %s\n' % os.getcwd())
     try:
-        os.mkdir(story_title)
+        os.mkdir("%s_%s" % (story_id, story_title))
     except:
         os.system('rm -rf %s' % story_title)
         os.mkdir(story_title)
@@ -203,12 +214,15 @@ def main():
         full_story += story
 
     # Open the file used to gather the full story and write it
-    full_file = open('%s%s%s.html' % (story_title, os.sep, story_title),
+    full_file = open('%s_%s%s%s.html' % (story_id, story_title,
+                                         os.sep, story_title),
                      'w', encoding='utf-8')
     full_file.write(insert_header(format_story(full_story)))
     full_file.close()
 
     print('DONE -- %s.html' % story_title)
+
+    return True
 
 
 if __name__ == '__main__':
