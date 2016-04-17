@@ -142,7 +142,7 @@ def get_chapters_and_story(page: str, story_id: int,
     return chapters, story
 
 
-def main(url=None) -> (Bool):
+def main(url=None) -> (bool):
     """Main function, do the real work.
 
  Parameter
