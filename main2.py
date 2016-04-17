@@ -154,7 +154,7 @@ def main(url=None) -> (bool):
 - False             - There was an unexpected error, please file a bug report.
 """
 
-    if not (url is None):
+    if url is None:
         print(c.INTRO)
 
         # Get the url of the first chapter
