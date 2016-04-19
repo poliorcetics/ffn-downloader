@@ -57,19 +57,25 @@ def format_chapters(chapters: list) -> (list):
     """Format the chapters to insert 0s when needed"""
 
     # Get the number of chapters
-    chap_nb = len(chapters)
+    chap_nb = str(len(chapters))
     # To find the numero of the chapter
     chap_num_regex = re.compile(r'\d*. ')
 
     for chapter in chapters:
+        #Replace the ':' which cause errors
+        chapter = chapter.replace(':', ' -')
+
         # Find the numero of the chapter and delete the non-digit part
         chap_num = chap_num_regex.findall(chapter)[0]
         chap_num = chap_num.replace('. ', '')
 
         # Insert 0s if needed
-        if len(chap_num) < len(str(chap_nb)):
-            chapters[int(chap_num) - 1] = "0" * (len(str(chap_nb)) -
+        if len(chap_num) < len(chap_nb):
+            chapters[int(chap_num) - 1] = "0" * (len(chap_nb) -
                                                  len(chap_num)) + chapter
+        else:
+            # To ensure the replacement is accounted for
+            chapters[int(chap_num) - 1] = chapter
 
     return chapters
 
@@ -186,8 +192,8 @@ def main(url=None) -> (bool):
     try:
         os.mkdir("%s_%s" % (story_id, story_title))
     except:
-        os.system('rm -rf %s' % story_title)
-        os.mkdir(story_title)
+        os.system("rm -rf %s_%s" % (story_id, story_title))
+        os.mkdir("%s_%s" % (story_id, story_title))
 
     for chap_num in range(1, len(chapters) + 1):
 
@@ -205,8 +211,9 @@ def main(url=None) -> (bool):
         story = insert_title(story, chapters, chap_num)
 
         # Write the chapter
-        chapter_file = open('%s_%s%s%s.html' % (story_id, story_title, os.sep,
-                                                chapters[chap_num - 1]),
+        chapter_file = open('%s_%s%s%s.html' %
+                            (story_id, story_title, os.sep,
+                             chapters[chap_num - 1]),
                             'w', encoding='utf-8')
         chapter_file.write(insert_header(format_story(story)))
         chapter_file.close()
@@ -218,7 +225,7 @@ def main(url=None) -> (bool):
 
     # Open the file used to gather the full story and write it
     full_file = open('%s_%s%s%s_%s.html' % (story_id, story_title,
-                                         os.sep, story_id, story_title),
+                                            os.sep, story_id, story_title),
                      'w', encoding='utf-8')
     full_file.write(insert_header(format_story(full_story)))
     full_file.close()
