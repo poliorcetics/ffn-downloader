@@ -182,8 +182,12 @@ def main(url=None) -> (bool):
     chapters = get_chapters_and_story(first_page, story_id,
                                       chapter, story_title)[0]
 
-    # Display the number of chapter
-    print("\n-- Number of chapter(s): %s" % len(chapters))
+    # Display informations about the story
+    print("""
+-- Title: %s
+-- ID: %s
+-- Number of chapter(s): %s
+-- URL used: %s""" % (story_title, story_id, len(chapters), url))
 
     full_story = ""
 
