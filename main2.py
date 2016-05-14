@@ -13,7 +13,39 @@ story.
 from urllib import request as rq
 import re
 import os
+import time
 import constants as c
+
+chapters = []
+
+
+def format_story(story_html: str) -> (str):
+    """Format the story by replacing elements by they wanted counterpart."""
+
+    # Elements which need to be replaced
+    to_replace = {
+        '<p': '\n<p',
+        'align=center': '',
+        '0.5em': '0',
+    }
+
+    for key, value in to_replace.items():
+        story_html = story_html.replace(key, value)
+
+    return story_html
+
+
+def insert_title(story_html: str, chapters: list, chapter: int) -> (str):
+    """Insert the title of the chapter in the story."""
+
+    return '\n<br />\n<br />\n<br />\n<hr size=1 noshade>\n<h1>%s</h1>\n%s\n' \
+        % (chapters[chapter - 1], story_html)
+
+
+def insert_header(full_story_html: str) -> (str):
+    """Insert the header to make the files more readable (I hope)."""
+
+    return c.HEADER + full_story_html + '</body>\n</html>'
 
 
 def get_story_infos(url: str) -> (int, int, str):
@@ -80,37 +112,12 @@ def format_chapters(chapters: list) -> (list):
     return chapters
 
 
-def format_story(story_html: str) -> (str):
-    """Format the story by replacing elements by they wanted counterpart."""
-
-    # Elements which need to be replaced
-    to_replace = {
-        '<p': '\n<p',
-        'align=center': '',
-        '0.5em': '0',
-    }
-
-    for key, value in to_replace.items():
-        story_html = story_html.replace(key, value)
-
-    return story_html
-
-
-def insert_title(story_html: str, chapters: list, chapter: int) -> (str):
-
-    return '\n<br />\n<br />\n<br />\n<hr size=1 noshade>\n<h1>%s</h1>\n%s\n' \
-        % (chapters[chapter - 1], story_html)
-
-
-def insert_header(full_story_html: str) -> (str):
-
-    return c.HEADER + full_story_html + '</body>\n</html>'
-
-
 def get_list_of_chapters(chapters_html: str) -> (list):
     """Gather a list of the chapters of the story and format them.
 The entry must be only the html part containing the chapters, else you'll
 have problems."""
+
+    global chapters
 
     # Get only the meaningful content
     chapters_html = chapters_html.partition('</select>')[0]
@@ -133,14 +140,18 @@ def get_chapters_and_story(page: str, story_id: int,
                            chap: int, story_title: str) -> (list, str):
     """Gather a list of the chapters and the story itself in the given page."""
 
+    global chapters
+
     # A little formatting to ease the process.
     page = page.replace('\n', '')
 
     # Delete the useless external parts
     page = delete_external_parts(page, story_id, chap, story_title)
 
-    # Get the chapters in html form and sort them into a list
-    chapters = get_list_of_chapters(page.partition("</script>")[0])
+    # Get the chapters in html form and sort them into a list if it isn't
+    # already done
+    if chapters == []:
+        chapters = get_list_of_chapters(page.partition("</script>")[0])
 
     # Get the story in html form
     story = page.partition("</script>")[2] + '</div></div>'
@@ -160,6 +171,8 @@ def main(url=None) -> (bool):
 - False             - There was an unexpected error, please file a bug report.
 """
 
+    global chapters
+
     if url is None:
         print(c.INTRO)
 
@@ -178,7 +191,8 @@ def main(url=None) -> (bool):
     first_page = rq.urlopen(url)
     first_page = first_page.read().decode('utf-8')
 
-    # Gather the chapters
+    # Reset the chapters to then ensure a correct gathering ot them
+    chapters = []
     chapters = get_chapters_and_story(first_page, story_id,
                                       chapter, story_title)[0]
 
@@ -226,6 +240,9 @@ def main(url=None) -> (bool):
 
         # Add the chapter to the full story
         full_story += story
+
+        # Wait a little to avoid being viewed as a DDOS-er by the website
+        time.sleep(0.5)
 
     # Open the file used to gather the full story and write it
     full_file = open('%s_%s%s%s_%s.html' % (story_id, story_title,
