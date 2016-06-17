@@ -20,6 +20,19 @@ _SUMMARY_REGEX = r'<div class="xcontrast_txt" style="margin-top:2px">\n *(.*)'
 # Gather the chapters
 _CHAPTERS_REGEX = r'<option (selected="" )?value="\d*">\n *(.*)'
 
+# To correct some paragraphs which are messed up by FFN
+_WRONG_PAR_REGEX = r'(</p>){2,}'
+# Same purpose here
+_WRONG_PAR_REGEX_2 = r'(</p>)*<hr size=1 (width=100% )?noshade>(</p>)?(<p>)?'
+
+# The div which contains the story
+# At the beginning
+_BEGINNING = '<div class="storytext xcontrast_txt nocopy" id="storytext">'
+# At the end for a story with multiple chapters
+_END_MANY = '<div style="height:5px"></div><div style="clear:both;text-align:right;">'
+# At the end for one chapter
+_END_ONE = '<div style="height:5px"></div><script>'
+
 # The root url to access to ffn
 ROOT_URL = "https://www.fanfiction.net/s/"
 

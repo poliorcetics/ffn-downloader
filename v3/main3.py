@@ -1,6 +1,7 @@
 # -*- coding : utf-8 -*-
 
 import os
+import sys
 import re
 import time
 from urllib import request
@@ -13,14 +14,15 @@ author: Poliorcetics
 3rd version of the ffn_downloader.
 
 Main program to download stories from fanfiction.net. Use the main() function
-to do exactly that, everything else will be handled by both classes.
+to do exactly that, everything else will be handled by the code.
 
 Classes:
- - Chapter,
- - Story.
+ - Chapter(self, chapter: BeautifulSoup, num_chap: int, list_chap: list),
+ - Story(self, url=None, update=False).
 
 Functions:
- - main(url, update=False)                                      -> (bool)
+ - correct_html(chap: str)                                          -> (str),
+ - main(url: str, update=False)                                     -> (bool).
 """
 
 
@@ -30,19 +32,20 @@ class Chapter:
 Methods:
     Private
  - __init__(self, chapter: BeautifulSoup, num_chap: int, list_chap: list),
- - _insert_anchor(self, title: str, num_chap: int)          -> (str),
+ - _get_chapter_text(self, chap: BeautifulSoup, chap_count: int)    -> (str):
+ - _insert_anchor(self, title: str, num_chap: int)                  -> (str),
     Public
- - write_chap(self)                                         -> (str),
- - get_chap(self)                                           -> (str).
+ - write_chap(self)                                                 -> (str),
+ - get_chap(self)                                                   -> (str).
 
 Variables:
     Private
- - self._previous_link                                      - str,
- - self._next_link                                          - str,
+ - self._previous_link                                              - str,
+ - self._next_link                                                  - str,
     Public
- - self.text_chap                                           - str,
- - self.title_chap                                          - str,
- - self.title_file                                          - str.
+ - self.text_chap                                                   - str,
+ - self.title_chap                                                  - str,
+ - self.title_file                                                  - str.
 """
 
     def __init__(self, chapter: BeautifulSoup, num_chap: int, list_chap: list):
@@ -55,7 +58,16 @@ Parameters:
 """
 
         # Find the text of the chapter and make it readable
-        self.text_chap = chapter.find(id='storytext').prettify()
+        # If there are too many tags and it causes a recursion error,
+        # I modify the base parameter for it and retry
+        chap_count = len(list_chap)
+        while True:
+            try:
+                self.text_chap = self._get_chapter_text(chapter, chap_count)
+                break
+            except Exception:
+                print('---------------------- I DID A SETRECURSION !!!!!!!!!!')
+                sys.setrecursionlimit(sys.getrecursionlimit() + 500)
 
         # Compute the number of '0's needed to equalize the length
         zeros = '0' * (len(str(len(list_chap))) - len(str(num_chap)))
@@ -67,17 +79,34 @@ Parameters:
 
         # Insert the 'previous' link if needed
         if num_chap > 1:
-            prev = '0' * (len(str(len(list_chap))) - len(str(num_chap - 1)))
+            prev = '0' * (len(str(chap_count)) - len(str(num_chap - 1)))
             self._previous_link = '%s%s.html' % (prev, num_chap - 1)
         else:
             self._previous_link = None
 
         # Insert the 'next' link if needed
-        if num_chap < len(list_chap):
-            nex = '0' * (len(str(len(list_chap))) - len(str(num_chap + 1)))
+        if num_chap < chap_count:
+            nex = '0' * (len(str(chap_count)) - len(str(num_chap + 1)))
             self._next_link = '%s%s.html' % (nex, num_chap + 1)
         else:
             self._next_link = None
+
+    def _get_chapter_text(self, chap: BeautifulSoup, chap_count: int) -> (str):
+        """Return the text of the chapter itself in its entirety.
+
+Parameter:
+ - chap                     - BeautifulSoup - the html in a BeautifulSoup
+object,
+ - chap_count               - int - the number of chapter(s)."""
+
+        text = str(chap).replace('\n', '')
+        text = c._BEGINNING + text.split(c._BEGINNING, 1)[1]
+        if chap_count > 1:
+            text = text.split(c._END_MANY, 1)[0] + '</div>'
+        else:
+            text = text.split(c._END_ONE, 1)[0] + '</div>'
+
+        return correct_html(text)
 
     def _insert_anchor(self, title: str, num_chap: int) -> (str):
         """Insert the anchor around the title of the chapter to help creating
@@ -132,6 +161,7 @@ Methods:
 
 Variables
     Private
+ - self._first_chap                                         - BeautifulSoup,
  - self._update                                             - bool,
     Public
  - self.updated                                             - bool,
@@ -142,6 +172,7 @@ Variables
  - self.summary                                             - str,
  - self.tokens                                              - str,
  - self.infos                                               - list,
+ - self.chap_count                                          - int,
  - self.story                                               - str.
 """
 
@@ -155,7 +186,17 @@ Parameters:
 
         # Open the first chapter to know everything there is to know about the
         # story
-        first_chap = request.urlopen(url)
+        for _ in range(10):
+            try:
+                first_chap = request.urlopen(url)
+                break
+            except:
+                first_chap = None
+            time.sleep(1)
+
+        if first_chap is None:
+            raise
+
         first_chap = first_chap.read().decode('utf-8')
         self._first_chap = BeautifulSoup(first_chap, 'html.parser')
 
@@ -185,6 +226,9 @@ Parameters:
         # Get the informations and the chapters early on
         self._get_infos(self._first_chap.prettify())
         self.list_chapters = self._get_list_chapters(self._first_chap)
+
+        # Get the number of chapters
+        self.chap_count = len(self.list_chapters)
 
         # Will contain the full story
         self.story = ''
@@ -261,7 +305,7 @@ Chapters ({chap_count}):<br />
 """.format(header=c.HEADER, title=self.s_title, author=self.author,
            base_url=c.ROOT_URL, num_id=self.num_id, text_id=self.text_id,
            summary=self.summary, tokens=tokens_formatted,
-           chap_count=len(self.list_chapters), chapters=chap_formatted))
+           chap_count=self.chap_count, chapters=chap_formatted))
 
     def _add_table_of_contents(self) -> (None):
         """Generate a table of contents for the story."""
@@ -269,7 +313,7 @@ Chapters ({chap_count}):<br />
         self.story += '\nTable of contents:<br /><br />\n'
 
         # Each entry is linked to its chapter, allowing in-page navigation
-        for num_chap in range(1, len(self.list_chapters) + 1):
+        for num_chap in range(1, self.chap_count + 1):
             self.story += """
 <a href="#chap%s">%s</a><br />
 """ % (num_chap, self.list_chapters[num_chap - 1])
@@ -290,9 +334,9 @@ Return:
         print("""AUTHOR: {author}
 ID: {num_id}
 URL: {base_url}{num_id}/1/{text_id}
-CHAPTERS: {chap_count}\n""".format(author=self.author, base_url=c.ROOT_URL,
-                                   num_id=self.num_id, text_id=self.text_id,
-                                   chap_count=len(self.list_chapters)))
+CHAPTERS: {chap_count}""".format(author=self.author, base_url=c.ROOT_URL,
+                                 num_id=self.num_id, text_id=self.text_id,
+                                 chap_count=self.chap_count))
 
         # Save the base directory and set up the one for the story
         base_dir = os.getcwd()
@@ -308,22 +352,34 @@ CHAPTERS: {chap_count}\n""".format(author=self.author, base_url=c.ROOT_URL,
                     os.remove('%s%s%s' % (story_dir, os.sep, file))
                 os.rmdir(story_dir)
                 os.mkdir(story_dir)
-        os.chdir(story_dir)
+            finally:
+                os.chdir(story_dir)
+        else:
+            os.chdir(story_dir)
+            # Count the chapters. To account for the two files that
+            # are not chapters, -2
+            num_old_chaps = - 2
+            for file in os.listdir():
+                # Count the chapters only if they are .html files
+                if '.html' in file:
+                    num_old_chaps += 1
+            # Display the number of chapters that are already done
+            print('OLD CHAPTERS: %s' % num_old_chaps)
 
         # Write the file containing the informations
         self._write_infos()
-        print('DONE -- %s_infos.html' % self.text_id)
+        print('\nDONE -- %s_infos.html' % self.text_id)
 
         # First part of the story
         self.story = c.HEADER
 
         # Add the table of contents if needed
-        if len(self.list_chapters) > 1:
+        if self.chap_count > 1:
             self.story += '\n<h1>%s</h1><br /><br />\n' % self.s_title
             self._add_table_of_contents()
 
         # Deal with each and every chapter
-        for num_chap in range(1, len(self.list_chapters) + 1):
+        for num_chap in range(1, self.chap_count + 1):
 
             # Get the chapter
             url = '%s%s/%s/' % (c.ROOT_URL, self.num_id, num_chap)
@@ -338,17 +394,17 @@ CHAPTERS: {chap_count}\n""".format(author=self.author, base_url=c.ROOT_URL,
                 time.sleep(1)
                 trials += 1
             if chap is None:
-                print('Network Error while opening the chapter.')
+                print('!!! ERROR: Network Error while opening the chapter.')
                 raise Exception
+
+            # Get the chapter in the proper format
             chap = chap.read().decode('utf-8')
+            chap = correct_html(chap)
             chap = BeautifulSoup(chap, 'html.parser')
             chap = Chapter(chap, num_chap, self.list_chapters)
 
             # If the story is to be updated
             if self._update:
-                # Count the chapters. To account for the two files that
-                # are not chapters, -2
-                num_old_chaps = len(os.listdir()) - 2
                 # Write the chapter only if needed
                 if num_chap <= num_old_chaps:
                     self.story += chap.get_chap()
@@ -360,7 +416,7 @@ CHAPTERS: {chap_count}\n""".format(author=self.author, base_url=c.ROOT_URL,
             # Not to update
             else:
                 # If the story is not a one-shot
-                if len(self.list_chapters) > 1:
+                if self.chap_count > 1:
                     self.story += chap.write_chap()
                     print('DONE -- %s' % chap.title_file)
                 # If the story is a one-shot
@@ -377,13 +433,40 @@ CHAPTERS: {chap_count}\n""".format(author=self.author, base_url=c.ROOT_URL,
         return self.updated
 
 
-def main(url, update=False) -> (bool):
+def correct_html(chap: str) -> (str):
+    """I encountered stories where FFN had messed up the code to the point
+where it caused troubles getting the chapter. Here are the fixes for what I
+saw until today.
+
+Parameter:
+ - chap             - str - the text to modify as a string."""
+
+    chap = re.sub(c._WRONG_PAR_REGEX, '</p>', chap)
+
+    for match in re.findall(c._WRONG_PAR_REGEX_2, chap):
+        to_repl = ''
+        # </p>
+        to_repl += match[0] + '<hr size=1 ' if match[0] else '<hr size=1 '
+        # width=100%
+        to_repl += match[1] + 'noshade>' if match[1] else 'noshade>'
+        # </p>
+        to_repl += match[2] if match[2] else ''
+        # <p>
+        to_repl += match[3] if match[3] else ''
+        chap = chap.replace(to_repl, '</p><hr width=100% size=1 noshade><p>')
+
+    chap = re.sub(c._WRONG_PAR_REGEX, '</p>', chap)
+
+    return chap
+
+
+def main(url: str, update=False) -> (bool):
     """Ease the use of the downloader.
 
 Parameters:
- - url          - str - the url of the first chapter of the story,
- - update       - bool - True if the story must be updated, False if it should
-                         be done from the very beginning.
+ - url                  - str - the url of the first chapter of the story,
+ - update=False         - True if the story must be updated, False if it should
+be done from the very beginning.
 
 Return:
  - self.updated         - bool - True if the story was updated, False if not.
