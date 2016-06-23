@@ -10,7 +10,7 @@ import constants as c
 
 """ -- main3.py
 
-author: Poliorcetics
+Author: Poliorcetics
 3rd version of the ffn_downloader.
 
 Main program to download stories from fanfiction.net. Use the main() function
@@ -66,11 +66,10 @@ Parameters:
                 self.text_chap = self._get_chapter_text(chapter, chap_count)
                 break
             except Exception:
-                print('---------------------- I DID A SETRECURSION !!!!!!!!!!')
                 sys.setrecursionlimit(sys.getrecursionlimit() + 500)
 
         # Compute the number of '0's needed to equalize the length
-        zeros = '0' * (len(str(len(list_chap))) - len(str(num_chap)))
+        zeros = ''.zfill(len(str(len(list_chap))) - len(str(num_chap)))
 
         # Compute both titles
         self.title_chap = '\n<h1>%s%s</h1>\n' % (zeros, list_chap[num_chap-1])
@@ -184,6 +183,9 @@ Parameters:
  - update       - bool - True if the story must be updated, False if it should
                          be done from the very beginning."""
 
+        if url is None:
+            raise ValueError('url is None')
+
         # Open the first chapter to know everything there is to know about the
         # story
         for _ in range(10):
@@ -195,7 +197,7 @@ Parameters:
             time.sleep(1)
 
         if first_chap is None:
-            raise
+            raise ValueError("first_chap is None")
 
         first_chap = first_chap.read().decode('utf-8')
         self._first_chap = BeautifulSoup(first_chap, 'html.parser')
@@ -277,12 +279,21 @@ Parameters:
     def _write_infos(self) -> (None):
         """Write the informations about the story in the proper file."""
 
-        # Format the chapters to allow a clean display
+        # Format the chapters to allow a clean display, handling the case
+        # where there is only one
         chap_formatted = ""
-        for chap in self.list_chapters:
-            chap_formatted += chap + '<br />'
+        if self.chap_count > 1:
+            for chap_num in range(1, self.chap_count + 1):
+                chap_formatted += """
+<li><a href="%s.html">%s</a></li>
+""" % (str(chap_num).zfill(len(str(self.chap_count))),
+                    self.list_chapters[chap_num - 1])
+        else:
+            chap_formatted = """
+<li><a href="%s_%s.html">%s</a></li>""" % (self.text_id, self.num_id,
+                                           self.s_title)
 
-        # The same with the tokens
+        # Format the tokens
         tokens_formatted = self.tokens.replace(' - ', '\n<br />\n- ')
 
         # Open and write
@@ -299,13 +310,15 @@ Other informations:<br />
 - {tokens}<br />
 <br />
 Chapters ({chap_count}):<br />
-<br />
+<ul>
 {chapters}
+</ul>
 \n</body>\n</html>
 """.format(header=c.HEADER, title=self.s_title, author=self.author,
-           base_url=c.ROOT_URL, num_id=self.num_id, text_id=self.text_id,
-           summary=self.summary, tokens=tokens_formatted,
-           chap_count=self.chap_count, chapters=chap_formatted))
+                    base_url=c.ROOT_URL, num_id=self.num_id,
+                    text_id=self.text_id, summary=self.summary,
+                    tokens=tokens_formatted, chap_count=self.chap_count,
+                    chapters=chap_formatted))
 
     def _add_table_of_contents(self) -> (None):
         """Generate a table of contents for the story."""
@@ -398,17 +411,19 @@ CHAPTERS: {chap_count}""".format(author=self.author, base_url=c.ROOT_URL,
                 raise Exception
 
             # Get the chapter in the proper format
-            chap = chap.read().decode('utf-8')
-            chap = correct_html(chap)
+            chap = correct_html(chap.read().decode('utf-8'))
             chap = BeautifulSoup(chap, 'html.parser')
             chap = Chapter(chap, num_chap, self.list_chapters)
 
             # If the story is to be updated
             if self._update:
                 # Write the chapter only if needed
-                if num_chap <= num_old_chaps:
+                if num_chap < num_old_chaps:
                     self.story += chap.get_chap()
                     print('ALREADY DONE -- %s' % chap.title_file)
+                elif num_chap == num_old_chaps:
+                    self.story += chap.write_chap()
+                    print('UPDATED -- %s' % chap.title_file)
                 else:
                     self.story += chap.write_chap()
                     print('NEW -- %s' % chap.title_file)
