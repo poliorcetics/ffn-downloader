@@ -151,7 +151,7 @@ be done though, everything is supposed to be handled by the code.
 Methods:
     Private
  - __init__(self, url=None, update=False)                   -> (None),
- - _get_infos(self, html: BeautifulSoup.prettify)           -> (None),
+ - _get_infos(self, html: BeautifulSoup)                    -> (None),
  - _get_list_chapters(self)                                 -> (list),
  - _write_infos(self)                                       -> (None),
  - _add_table_of_contents(self)                             -> (None),
@@ -166,11 +166,11 @@ Variables
  - self.updated                                             - bool,
  - self.text_id                                             - str,
  - self.num_id                                              - str,
+ - self.universe                                            - str,
  - self.s_title                                             - str,
  - self.author                                              - str,
  - self.summary                                             - str,
  - self.tokens                                              - str,
- - self.infos                                               - list,
  - self.chap_count                                          - int,
  - self.story                                               - str.
 """
@@ -210,23 +210,14 @@ Parameters:
         # The informations about the story
         self.text_id = ''
         self.num_id = ''
+        self.universe = ''
         self.s_title = ''
         self.author = ''
         self.summary = ''
         self.tokens = ''
 
-        # To ease accessing all of them
-        self.infos = [
-            self.text_id,
-            self.num_id,
-            self.s_title,
-            self.author,
-            self.summary,
-            self.tokens,
-        ]
-
         # Get the informations and the chapters early on
-        self._get_infos(self._first_chap.prettify())
+        self._get_infos(self._first_chap)
         self.list_chapters = self._get_list_chapters(self._first_chap)
 
         # Get the number of chapters
@@ -235,10 +226,18 @@ Parameters:
         # Will contain the full story
         self.story = ''
 
-    def _get_infos(self, html: BeautifulSoup.prettify) -> (None):
+    def _get_infos(self, html: BeautifulSoup) -> (None):
         """Get all the available infos about the story."""
 
-        # The one we can be sure to found:
+        # Get the universe of the story, easilt findable in the BeautifoulSoup
+        # object
+        universe = str(html.title).replace(' fanfic | FanFiction</title>', '')
+        universe = re.split(', an? ', universe)[-1]
+        self.universe = ' '.join(wd.capitalize() for wd in universe.split())
+
+        html = html.prettify()
+
+        # Now we find the other informations in a string
         self.text_id = re.search(c._TEXT_ID_REGEX, html).group(1)
         self.num_id = re.search(c._NUM_ID_REGEX, html).group(1)
         self.s_title = re.search(c._TITLE_REGEX, html).group(1)
@@ -247,17 +246,7 @@ Parameters:
 
         tokens_text = str(self._first_chap.find('span', 'xgray xcontrast_txt'))
         tokens_soup = BeautifulSoup(tokens_text, 'html.parser')
-        self.tokens = tokens_soup.get_text()
-        ' '.join(self.tokens.split())
-
-        self.infos = [
-            self.text_id,
-            self.num_id,
-            self.s_title,
-            self.author,
-            self.summary,
-            self.tokens,
-        ]
+        self.tokens = re.sub(c._WRONG_SPACES, ' ', tokens_soup.get_text())
 
     def _get_list_chapters(self, html: BeautifulSoup) -> (list):
         """Return a list containing the chapters of the story."""
@@ -302,7 +291,9 @@ Parameters:
             f.write("""{header}
 <h1>{title}</h1><br />
 By: {author}<br />
-URL: {base_url}{num_id}/1/{text_id}<br />
+URL: <a href="{url}">{url}</a><br />
+<br />
+Universe: <em>{universe}</em><br/>
 <br />
 {summary}<br />
 <br />
@@ -315,8 +306,8 @@ Chapters ({chap_count}):<br />
 </ul>
 \n</body>\n</html>
 """.format(header=c.HEADER, title=self.s_title, author=self.author,
-                    base_url=c.ROOT_URL, num_id=self.num_id,
-                    text_id=self.text_id, summary=self.summary,
+                    url=c.ROOT_URL + self.num_id + '/1/' + self.text_id,
+                    universe=self.universe, summary=self.summary,
                     tokens=tokens_formatted, chap_count=self.chap_count,
                     chapters=chap_formatted))
 
@@ -341,7 +332,7 @@ Return:
 
         # Introduction
         print('_' * 80)
-        print('\n\n\nDOING: %s \n' % self.s_title)
+        print('\nDOING: %s \n' % self.s_title)
 
         # Some basic informations to let the user know what it is downloading
         print("""AUTHOR: {author}
@@ -420,21 +411,25 @@ CHAPTERS: {chap_count}""".format(author=self.author, base_url=c.ROOT_URL,
                 # Write the chapter only if needed
                 if num_chap < num_old_chaps:
                     self.story += chap.get_chap()
-                    print('ALREADY DONE -- %s' % chap.title_file)
+                    print('ALREADY DONE -- %s /%s' % (chap.title_file,
+                                                      self.chap_count))
                 elif num_chap == num_old_chaps:
                     self.story += chap.write_chap()
-                    print('UPDATED -- %s' % chap.title_file)
+                    print('UPDATED -- %s /%s' % (chap.title_file,
+                                                 self.chap_count))
                 else:
                     self.story += chap.write_chap()
-                    print('NEW -- %s' % chap.title_file)
+                    print('NEW -- %s /%s' % (chap.title_file, self.chap_count))
                     self.updated = True
             # Not to update
             else:
                 # If the story is not a one-shot
                 if self.chap_count > 1:
                     self.story += chap.write_chap()
-                    print('DONE -- %s' % chap.title_file)
-                # If the story is a one-shot
+                    print('DONE -- %s /%s' % (chap.title_file,
+                                              self.chap_count))
+                # If the story is a one-shot, no need to write the chapter 1,
+                # it is the same as the full story
                 else:
                     self.story += chap.get_chap()
 
@@ -470,7 +465,8 @@ Parameter:
         to_repl += match[3] if match[3] else ''
         chap = chap.replace(to_repl, '</p><hr width=100% size=1 noshade><p>')
 
-    chap = re.sub(c._WRONG_PAR_REGEX, '</p>', chap)
+    chap = re.sub(c._WRONG_PAR_REGEX, '</p>', chap).replace('\n', '\n ')
+    chap = re.sub(c._WRONG_SPACES, ' ', chap)
 
     return chap
 

@@ -24,6 +24,8 @@ _CHAPTERS_REGEX = r'<option (selected="" )?value="\d*">\n *(.*)'
 _WRONG_PAR_REGEX = r'(</p>){2,}'
 # Same purpose here
 _WRONG_PAR_REGEX_2 = r'(</p>)*<hr size=1 (width=100% )?noshade>(</p>)?(<p>)?'
+# When there are multiples spaces
+_WRONG_SPACES = r' {2,}'
 
 # The div which contains the story
 # At the beginning
