@@ -24,7 +24,7 @@ Third, you sit and wait. Depending on the number of chapters and their length, i
 
 Yep !
 
-I will take an example to explain. Say I want to download [HPMOR](https://www.fanfiction.net/s/5782108/1/Harry-Potter-and-the-Methods-of-Rationality) (actually, I did it a long time ago and even did a nice *.pdf* with it).
+I will take an example to explain. Say I want to download [HPMOR](https://www.fanfiction.net/s/5782108/1/Harry-Potter-and-the-Methods-of-Rationality) (actually, I did it a long time ago and even did a nice *.pdf* with it so I don't really need to download it now).
 
 The link I will use here is [https://www.fanfiction.net/s/5782108/1/Harry-Potter-and-the-Methods-of-Rationality](https://www.fanfiction.net/s/5782108/1/Harry-Potter-and-the-Methods-of-Rationality).
 
@@ -45,13 +45,13 @@ Finally the file containing the full story is written. It is named with the same
 
 ### You said we can update our stories, what is it ?
 
-I don't have any joke for this ... :'('
+I don't have any joke for this ... :'(
 
 Once you download a story, if the author publishes a new chapter, you may want to update the story instead of downloading it fully each time.
 
 To do so, just run the program in the following way:
 
- - Run it in the parent directory of the directory containing the story. For example, if your story is in `/foo/Harry-Potter-and-the-Methods-of-Rationality_5782108`, run the program in `/foo`.
+ - Run it in the parent directory of the directory containing the story. For example, if your story is in `/foo/Harry-Potter-and-the-Methods-of-Rationality_5782108`, run the program in `/foo/`.
  - When giving the URL, set the parameter `update` to `True`.
 
  It will update the story by downloading the new informations and the new chapter(s). The files containing the informations and the full story will be obviously updated in the process to keep up with the story itself.
@@ -88,8 +88,6 @@ The results in the console:
 ~$: python3 main3.py
 ________________________________________________________________________________
 
-
-
 DOING: Resistance
 
 AUTHOR: lorien829
@@ -98,34 +96,34 @@ URL: https://www.fanfiction.net/s/2746577/1/Resistance
 CHAPTERS: 28
 
 DONE -- Resistance_infos.html
-DONE -- 01.html
-DONE -- 02.html
-DONE -- 03.html
-DONE -- 04.html
-DONE -- 05.html
-DONE -- 06.html
-DONE -- 07.html
-DONE -- 08.html
-DONE -- 09.html
-DONE -- 10.html
-DONE -- 11.html
-DONE -- 12.html
-DONE -- 13.html
-DONE -- 14.html
-DONE -- 15.html
-DONE -- 16.html
-DONE -- 17.html
-DONE -- 18.html
-DONE -- 19.html
-DONE -- 20.html
-DONE -- 21.html
-DONE -- 22.html
-DONE -- 23.html
-DONE -- 24.html
-DONE -- 25.html
-DONE -- 26.html
-DONE -- 27.html
-DONE -- 28.html
+DONE -- 01.html /28
+DONE -- 02.html /28
+DONE -- 03.html /28
+DONE -- 04.html /28
+DONE -- 05.html /28
+DONE -- 06.html /28
+DONE -- 07.html /28
+DONE -- 08.html /28
+DONE -- 09.html /28
+DONE -- 10.html /28
+DONE -- 11.html /28
+DONE -- 12.html /28
+DONE -- 13.html /28
+DONE -- 14.html /28
+DONE -- 15.html /28
+DONE -- 16.html /28
+DONE -- 17.html /28
+DONE -- 18.html /28
+DONE -- 19.html /28
+DONE -- 20.html /28
+DONE -- 21.html /28
+DONE -- 22.html /28
+DONE -- 23.html /28
+DONE -- 24.html /28
+DONE -- 25.html /28
+DONE -- 26.html /28
+DONE -- 27.html /28
+DONE -- 28.html /28
 DONE -- Resistance_2746577.html
 ~$:
 ```
@@ -139,6 +137,8 @@ Resistance
 By: lorien829
 URL: https://www.fanfiction.net/s/2746577/1/Resistance
 
+Universe: Harry Potter
+
 Voldemort has launched an all out war on the Wizarding World, and has taken the Boy Who Lived. But he has not reckoned on the resourcefulness of Hermione Granger. HHr developing in a sort of postapocalyptic environment.
 
 Other informations:
@@ -149,8 +149,8 @@ Other informations:
 - Chapters: 28
 - Words: 269,062
 - Reviews: 392
-- Favs: 474
-- Follows: 202
+- Favs: 476
+- Follows: 203
 - Updated: 2/8/2009
 - Published: 1/10/2006
 - Status: Complete
@@ -187,3 +187,5 @@ Chapters (28):
  • 27. Crescendo
  • 28. Zenith
 ```
+
+Hope you understood all this stuff clearly, if you didn't feel free to contact me and tell me that I'm bad at explaining things, I'll try to improve that. ;)
