@@ -3,8 +3,9 @@
 import os
 import sys
 import re
-import time
-from urllib import request
+import urllib.request
+import multiprocessing.pool
+import functools
 from bs4 import BeautifulSoup
 import constants as c
 
@@ -22,6 +23,8 @@ Classes:
 
 Functions:
  - correct_html(chap: str)                                          -> (str),
+ - timeout(max_timeout: int)                                        -> (@),
+ - get_url(url: str)                                                -> (str),
  - main(url: str, update=False)                                     -> (bool).
 """
 
@@ -188,18 +191,11 @@ Parameters:
 
         # Open the first chapter to know everything there is to know about the
         # story
-        for _ in range(10):
-            try:
-                first_chap = request.urlopen(url)
-                break
-            except:
-                first_chap = None
-            time.sleep(1)
-
+        first_chap = get_url(url)
         if first_chap is None:
-            raise ValueError("first_chap is None")
-
-        first_chap = first_chap.read().decode('utf-8')
+            print('!!! ERROR: Network Error while opening the first chapter.')
+            raise Exception
+        first_chap = correct_html(first_chap)
         self._first_chap = BeautifulSoup(first_chap, 'html.parser')
 
         # To know if the story is here to be updated or completely downloaded
@@ -388,21 +384,13 @@ CHAPTERS: {chap_count}""".format(author=self.author, base_url=c.ROOT_URL,
             # Get the chapter
             url = '%s%s/%s/' % (c.ROOT_URL, self.num_id, num_chap)
             # To handle possible network problems
-            trials = 0
-            while trials < 10:
-                try:
-                    chap = request.urlopen(url)
-                    break
-                except:
-                    chap = None
-                time.sleep(1)
-                trials += 1
+            chap = get_url(url)
             if chap is None:
-                print('!!! ERROR: Network Error while opening the chapter.')
+                print('!!! ERROR: Error while opening the chapter.')
                 raise Exception
 
             # Get the chapter in the proper format
-            chap = correct_html(chap.read().decode('utf-8'))
+            chap = correct_html(chap)
             chap = BeautifulSoup(chap, 'html.parser')
             chap = Chapter(chap, num_chap, self.list_chapters)
 
@@ -469,6 +457,56 @@ Parameter:
     chap = re.sub(c._WRONG_SPACES, ' ', chap)
 
     return chap
+
+
+# Comes from 'http://stackoverflow.com/a/35139284'
+def timeout(max_timeout):
+    """Timeout decorator, parameter in seconds."""
+    def timeout_decorator(item):
+        """Wrap the original function."""
+        @functools.wraps(item)
+        def func_wrapper(*args, **kwargs):
+            """Closure for function."""
+            pool = multiprocessing.pool.ThreadPool(processes=1)
+            async_result = pool.apply_async(item, args, kwargs)
+            # raises a TimeoutError if execution exceeds max_timeout
+            return async_result.get(max_timeout)
+        return func_wrapper
+    return timeout_decorator
+
+
+def get_url(url: str) -> (str):
+    """Take a URL and return the page as a string containing the html.
+
+Parameter:
+ - url              - str - the URL to retrieve.
+
+Return:
+ - html             - str - the HTML of the retrieved page."""
+
+    @timeout(4)
+    def getter(url):
+        """Get the URL and return the html in a 4 seconds window else raise a
+TimeoutError."""
+        page = urllib.request.urlopen(url)
+        page = page.read().decode('utf-8')
+        return page
+
+    while True:
+        try:
+            html = getter(url)
+            break
+        except Exception as e:
+            if len(e) == 0:
+                continue
+            elif '404' in e:
+                print('!!! ERROR: %s' % e)
+                return None
+            else:
+                print('!!! ERROR: %s' % e)
+                continue
+
+    return html
 
 
 def main(url: str, update=False) -> (bool):
