@@ -44,7 +44,8 @@ __pycache__
 
 # Projects generated files #
 ############################
-*private* # Code for personal usage only
+# Code for personal usage only
+*private*
 # Older versions
 v1
 v2
