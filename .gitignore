@@ -44,5 +44,9 @@ __pycache__
 
 # Projects generated files #
 ############################
-*.html
-main.py # v1, will never be committed
+*private* # Code for personal usage only
+# Older versions
+v1
+v2
+v3
+v4
