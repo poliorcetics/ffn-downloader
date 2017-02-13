@@ -75,7 +75,7 @@ class Stats(object):
         """
         return (f"\n<div class='universe'>\n<div class='universe_name'>• {uni}"
                 f"</div>\n<div class='universe_count'>{tls.display_num(count)}"
-                f"stor{'ies' if count > 1 else 'y'}</div>\n</div><br />\n"
+                f" stor{'ies' if count > 1 else 'y'}</div>\n</div><br />\n"
                 )
 
     @staticmethod

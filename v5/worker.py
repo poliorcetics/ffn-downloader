@@ -43,6 +43,21 @@ class OnComputer(object):
         """
         self.M_PATH = m_path
 
+    def _get_full_path(self, path: str) -> str:
+        """
+        Takes a *path* and returns a full path, using *self.M_PATH*.
+
+        Args:
+            path (str): the path to process.
+                        If it's a full path, nothing is done, else self.M_PATH
+                        is placed at the beginning.
+        Returns:
+            A full path following the pattern: {self.M_PATH}{os.sep}{path}
+        """
+        if not(path[0] == '/' or path[1] == ':'):
+            path = f'{self.M_PATH}{os.sep}{path}'
+        return path
+
     def update_infos_in_paths(self, paths: list):
         """
         Update the informations of all the stories contained in all the *dirs*.
@@ -53,8 +68,7 @@ class OnComputer(object):
         base_dir = os.getcwd()
 
         for path in paths:
-
-            tls.chdir(self.M_PATH + path if path[0] != '/' else path)
+            tls.chdir(self._get_full_path(path))
 
             urls = tls.get_urls_from_folder(os.getcwd())
             writer = story.StoryWriter()
@@ -82,14 +96,17 @@ class OnComputer(object):
         if renew:
             self.update_infos_in_paths(paths)
 
+        paths2 = []
+
         for path in paths:
-            path = self.M_PATH + path if path[0] != '/' else path
+            path = self._get_full_path(path)
             stats.Stats.write_stats([path], path)
+            paths2.append(path)
 
         # Doesn't display the second time the statistics are done (IF they
         # are done a second time obviously)
-        if main and self.M_PATH not in paths:
-            stats.Stats.write_stats(paths, self.M_PATH, False)
+        if main:
+            stats.Stats.write_stats(paths2, self.M_PATH, False)
 
     def update_stories(self, dic: dict):
         """
@@ -116,8 +133,7 @@ class OnComputer(object):
         paths = sorted(dic.keys())
 
         for path in paths:
-
-            tls.chdir(self.M_PATH + path if path[0] != '/' else path)
+            tls.chdir(self._get_full_path(path))
             urls = dic[path]
 
             for url in urls:
@@ -150,8 +166,7 @@ class OnComputer(object):
         paths = sorted(dic.keys())
 
         for path in paths:
-
-            tls.chdir(self.M_PATH + path if path[0] != '/' else path)
+            tls.chdir(self._get_full_path(path))
             urls = dic[path]
 
             for url in urls:
