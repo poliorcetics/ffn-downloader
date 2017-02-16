@@ -162,29 +162,47 @@ Help for program: worker.py
 
 This program is a shell program designed to use the FFN DOWNLOADER application.
 
-Command syntax: python3.6 worker.py [fld] [arg] [...]
+Command syntax: python3.6 worker.py [fld] [opt] [...]
                                     help
 
-Arguments:
-  - fld
-      The folder in which the program will run. Can be a full path or a relative one.
+Options:
+••••••••
 
-  - arg: can take the following values
-      ui: updates informations in multiple paths
-          Syntax for [...]: [path1] [path2] ...
-      ut: updates statistics in multiple paths
-          Syntax for [...]: [renew] [main] [path1] [path2] ...
-      us: updates stories in a single path
-          Syntax for [...]: [path] [url1] [url2] ...
-      ns: downloads new stories in a single path
-          Syntax for [...]: [path] [url1] [url2] ...
+  - [fld]: The folder in which the program will run. Can be a full path or a relative one.
+
+  - [opt]: can take the following values
+
+    ui: updates informations in multiple paths
+        Syntax for [...]: [path1] [path2] ...
+
+    ut: updates statistics in multiple paths
+        Syntax for [...]: [renew] [main] [path1] [path2] ...
+
+    us: updates stories in a single path
+        Syntax for [...]: [path] [url1/id1] [url2/id2] ...
+
+    ns: downloads new stories in a single path
+        Syntax for [...]: [path] [url1/id1] [url2/id2] ...
 
   - help: displays this help
 
+Note:
+•••••
+
+It is possible to use either URLs or IDs to identify stories. It is also possible to mix the two type of identification without a problem.
+
 Example:
+••••••••
+
+(This examples assume you are in the correct directory to directly access worker.py)
+
 This will download "https://www.fanfiction.net/s/1/1/Example-Url" in "ffn/", which is found in "/":
 
   python3.6 worker.py / ns ffn/ https://www.fanfiction.net/s/1/1/Example-Url
+
+This command will accomplish exactly the same task:
+
+  python3.6 worker.py / ns ffn/ 1
 ```
 
 ### III.C: Warning about statistics.
