@@ -35,7 +35,7 @@ def chdir(path: str, display=True):
         print(f'\n---- FOLDER: {folder} ----\n')
 
 
-def check_url(url: str) -> bool:
+def is_url(url: str) -> bool:
     """
     Checks if a *url* appears to be a valid FFN url.
 
@@ -46,6 +46,20 @@ def check_url(url: str) -> bool:
         True if the url is correct (in appearance) else False.
     """
     return True if re.match(c.CORRECT_URL_REGEX, url) is not None else False
+
+
+def id_to_url(id_: str) -> str:
+    """
+    Gets an ID *id_* as a `str` and returns the corresponding url, as a `str`.
+
+    Args:
+        id_ (str): the id to use in the url returned
+
+    Returns:
+        A valid fanfiction.net url based on the given id, as a `string`.
+    """
+
+    return f'{c.ROOT_URL}{id_}/1/'
 
 
 def get_page(url: str, display=True, max_tries=5) -> str:

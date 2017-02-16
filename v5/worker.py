@@ -182,33 +182,43 @@ def get_help() -> str:
     return ('Help for program: worker.py\n\n'
             'This program is a shell program designed to use the FFN '
             'DOWNLOADER application.\n\n'
-            'Command syntax: python3.6 worker.py [fld] [arg] [...]\n'
+            'Command syntax: python3.6 worker.py [fld] [opt] [...]\n'
             '                                    help\n\n'
-            'Arguments:\n'
-            '  - fld\n'
-            '      The folder in which the program will run. Can be a full '
-            'path or a relative one.\n\n'
-            '  - arg: can take the following values\n'
-            '      ui: updates informations in multiple paths\n'
-            '          Syntax for [...]: [path1] [path2] ...\n'
-            '      ut: updates statistics in multiple paths\n'
-            '          Syntax for [...]: [renew] [main] [path1] [path2] ...\n'
-            '      us: updates stories in a single path\n'
-            '          Syntax for [...]: [path] [url1] [url2] ...\n'
-            '      ns: downloads new stories in a single path\n'
-            '          Syntax for [...]: [path] [url1] [url2] ...\n\n'
+            'Options:\n'
+            '••••••••\n\n'
+            '  - [fld]: The folder in which the program will run. Can be a '
+            'full path or a relative one.\n\n'
+            '  - [opt]: can take the following values\n\n'
+            '    ui: updates informations in multiple paths\n'
+            '        Syntax for [...]: [path1] [path2] ...\n\n'
+            '    ut: updates statistics in multiple paths\n'
+            '        Syntax for [...]: [renew] [main] [path1] [path2] ...\n\n'
+            '    us: updates stories in a single path\n'
+            '        Syntax for [...]: [path] [url1/id1] [url2/id2] ...\n\n'
+            '    ns: downloads new stories in a single path\n'
+            '        Syntax for [...]: [path] [url1/id1] [url2/id2] ...\n\n'
             '  - help: displays this help\n\n'
+            'Note:\n'
+            '•••••\n\n'
+            'It is possible to use either URLs or IDs to identify stories. '
+            'It is also possible to mix the two type of identification without'
+            ' a problem.\n\n'
             'Example:\n'
+            '••••••••\n\n'
+            '(This examples assume you are in the correct directory to '
+            'directly access worker.py)\n\n'
             'This will download "https://www.fanfiction.net/s/1/1/Example-Url"'
             ' in "ffn/", which is found in "/":\n\n'
             '  python3.6 worker.py / ns ffn/ https://www.fanfiction.net/s/1/1/'
-            'Example-Url\n'
+            'Example-Url\n\n'
+            'This command will accomplish exactly the same task:\n\n'
+            '  python3.6 worker.py / ns ffn/ 1\n\n'
             )
 
 
 if __name__ == '__main__':
 
-    # To avoid files named 'stats_._{date}.html'
+    # Two function to avoid files named 'stats_._{date}.html'
     def clean_path(path: str, fld: str) -> str:
         return fld if path == '.' else path
 
@@ -216,6 +226,13 @@ if __name__ == '__main__':
         for i in range(len(paths)):
             paths[i] = clean_path(paths[i], fld)
         return paths
+
+    # A function to ensure IDs and URLs are correclty handled
+    def setup_urls(args: tuple) -> list:
+        urls = list()
+        for arg in args:
+            urls.append(arg if tls.is_url(arg) else tls.id_to_url(arg))
+        return urls
 
     fld = sys.argv[1]
 
@@ -226,21 +243,26 @@ if __name__ == '__main__':
         if not(fld[0] == '/' or fld[1] == ':'):
             fld = f'{os.getcwd()}{os.sep}{fld}{os.sep}'
 
-        arg = sys.argv[2]
+        opt = sys.argv[2]
         oc = OnComputer(fld)
+        urls = list()
 
-        if arg == 'ui':  # Update informations
+        if opt == 'ui':  # Update informations
             paths = list(sys.argv[3:])
             oc.update_infos_in_paths(clean_paths(paths, fld))
-        elif arg == 'ut':  # Update statistics
+
+        elif opt == 'ut':  # Update statistics
             renew, main, paths = sys.argv[3], sys.argv[4], list(sys.argv[5:])
             oc.update_stats(clean_paths(paths, fld), renew, main)
-        elif arg == 'us':  # Update stories
-            path, urls = sys.argv[3], list(sys.argv[4:])
-            oc.update_stories({clean_path(path, fld): urls})
-        elif arg == 'ns':  # New stories
-            path, urls = sys.argv[3], list(sys.argv[4:])
-            oc.new_stories({clean_path(path, fld): urls})
+
+        elif opt == 'us':  # Update stories
+            path, args = sys.argv[3], tuple(sys.argv[4:])
+            oc.update_stories({clean_path(path, fld): setup_urls(args)})
+
+        elif opt == 'ns':  # New stories
+            path, args = sys.argv[3], tuple(sys.argv[4:])
+            oc.new_stories({clean_path(path, fld): setup_urls(args)})
+
         else:
-            print(f'[ERROR]: {arg} is not a valid value for *arg*.\n')
+            print(f'[ERROR]: {opt} is not a valid value for *opt*.\n')
             print(get_help())

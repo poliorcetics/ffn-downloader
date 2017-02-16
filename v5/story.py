@@ -60,7 +60,7 @@ class Story(object):
             ValueError: *url* is not valid.
         """
 
-        if not tls.check_url(url):
+        if not tls.is_url(url):
             raise ValueError(f"'{url}' is not valid.")
 
         page = tls.get_page(url)
