@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0
-File version: 2.0
+App version: 5.0.1
+File version: 2.0.1
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -467,7 +467,7 @@ class StoryWriter(object):
             if self.display:
                 print('[ERROR]: Story was not present in the directory, full '
                       'download is now started.\n\n')
-            self.create(st, False, display)
+            self.create(st)
             return
         else:
             for file in sorted(os.listdir()):
