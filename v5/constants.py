@@ -3,7 +3,7 @@ File: constants.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
 App version: 5.0.2
-File version: 4.0.1
+File version: 4.0.2
 
 Contains all the constants needed to make this app works.
 """
@@ -99,7 +99,7 @@ STORY_HEADER = """<!DOCTYPE html>
             font-family: "Helvetica";
             font-size: 15px;
             text-align: justify;
-            background-color: #dddddd;
+            background-color: #dfdfdf;
         }
         body {
             min-width: 25em;
@@ -126,7 +126,7 @@ STATS_HEADER = """<!DOCTYPE html>
             font-family: "Helvetica";
             font-size: 20px;
             text-align: left;
-            background-color: #dddddd;
+            background-color: #dfdfdf;
         }
         h1 { font-size: 26px; }
         a { color: #005b96; }
