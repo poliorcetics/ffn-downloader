@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.1
-File version: 2.0.1
+App version: 5.0.2
+File version: 2.0.2
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -29,24 +29,24 @@ class Story(object):
         get_chapter(self, c_num: int) -> str
 
     Public attributes:
-        ifs (dict): keys: - auth    - str - Story author
-                          - c_count - int - Number of chapters
-                          - lang    - str - Language
-                          - chap    - list - Ordered list of the chapters
-                          - n_id    - str - Numeric id
-                          - publ    - str - Date of first publication
-                          - rating  - str - Rated: K/K+/T/M
-                          - status  - str - Complete/In Progress
-                          - s_dir   - str - Story directory
-                          - smry    - str - Summary
-                          - t_id    - str - Textual id (title with dashes)
-                          - title   - str - Title
-                          - tk      - str - Tokens
-                          - uni     - str - Universe(s)
-                          - upd     - str - Date of the last update
-                                            (May not exist, then is 'Never')
-                          - url     - str - Url for the first chapter
-                          - w_count - str - Number of words
+        ifs (dict): keys: - auth    (str): Story author.
+                          - c_count (int): Number of chapters.
+                          - lang    (str): Language.
+                          - chap    (list): Ordered list of the chapters.
+                          - n_id    (str): Numeric id.
+                          - publ    (str): Date of first publication.
+                          - rating  (str): Rated: K/K+/T/M.
+                          - status  (str): Complete/In Progress.
+                          - s_dir   (str): Story directory.
+                          - smry    (str): Summary.
+                          - t_id    (str): Textual id (title with dashes).
+                          - title   (str): Title.
+                          - tk      (str): Tokens.
+                          - uni     (str): Universe(s).
+                          - upd     (str): Date of the last update.
+                                           (May not exist, then is 'Never').
+                          - url     (str): Url for the first chapter.
+                          - w_count (str): Number of words.
     """
 
     def __init__(self, url: str):
@@ -243,7 +243,7 @@ class Story(object):
             The formatted informations as `str`, ready to be written in a file.
 
         Raises:
-            ValueError('mode' cannot be {}, only 'h' or 's'.)
+            ValueError(f"'mode' cannot be '{mode}', only 'h' or 's'.")
         """
 
         def gen_toc(self) -> str:
@@ -292,7 +292,7 @@ class Story(object):
                     f"{self.ifs['w_count']}\n"
                     )
         else:
-            raise ValueError(f"'mode' cannot be {mode}, only 'h' or 's'.")
+            raise ValueError(f"'mode' cannot be '{mode}', only 'h' or 's'.")
 
     def _format_chapter(self, c_text: str, c_num: int) -> str:
         """

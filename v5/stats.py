@@ -2,8 +2,8 @@
 File: stats.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.1
-File version: 2.0
+App version: 5.0.2
+File version: 2.1
 
 Contains the class 'Stats' which handles the creation of the statistics.
 """
@@ -106,7 +106,6 @@ class Stats(object):
                           - url: Url.
                           - w_count: Words count.
                           - ratio: Ration (Words count // Chapters count).
-                          - n_id: Numerical ID.
             link (str): Can be 'infos' or 'url', indicates if the url put in
                         the stats links to FFN.net or to the story folder
 
@@ -127,12 +126,19 @@ class Stats(object):
         w_count = tls.display_num(story['w_count'])
         ratio = tls.display_num(story['ratio'])
 
-        return (f"\n<div class='story' title='{story['n_id']}'>\n"
+        # Setup the coloration
+        universe = f"<span class='uni_clr'>{story['uni']}</span>"
+        if story['status'] == 'Complete':
+            status = f"<span class='complete'>{story['status']}</span>"
+        else:
+            status = f"<span class='inprogress'>{story['status']}</span>"
+
+        return ("\n<div class='story'>\n"
                 f"<div class='s_title'>• <a href='{url}'>{story['title']}</a>"
-                f"<br/>\n<em>{story['uni']} — {story['status']}</em></div>\n"
-                f"<div class='s_words'>{w_count} words</div>\n"
-                f"<div class='s_chap'>{c_count} chapters</div>\n"
-                f"<div class='s_ratio'>~{ratio} w/c</div>\n</div>\n"
+                f"<br/>\n<em>{universe} — {status}</em></div>\n"
+                f"<div class='s_words counts_clr'>{w_count} words</div>\n"
+                f"<div class='s_chap counts_clr'>{c_count} chapters</div>\n"
+                f"<div class='s_ratio counts_clr'>~{ratio} w/c</div>\n</div>\n"
                 f"<div class='s_summary'>    {story['smry']}</div><br/>\n"
                 )
 
@@ -153,7 +159,6 @@ class Stats(object):
                             - url: Url.
                             - w_count: Words count.
                             - ratio: Ration (Words count // Chapters count).
-                            - n_id: Numerical ID.
             unvrs (dict): Associates the number of stories for a universe
                           to this universe.
             counts (tuple): contains the numbers of (in the following order):
@@ -214,7 +219,6 @@ class Stats(object):
                               - url: Url.
                               - w_count: Words count.
                               - ratio: Ration (Words count // Chapters count).
-                              - n_id: Numerical ID.
             universes (dict): Associates the number of stories for a universe
                               to this universe.
             counts (tuple): contains the numbers of (in the following order):
@@ -236,11 +240,11 @@ class Stats(object):
         for i in range(s_count):
 
             url = urls[i]
-            t_id = url.split('/')[6]
-            n_id = url.split('/')[4]
-            raw_infos = f'{t_id}_{n_id}{os.sep}.{n_id}'
+            text_id = url.split('/')[6]
+            num_id = url.split('/')[4]
+            raw_infos_file = f'{text_id}_{num_id}{os.sep}.{num_id}'
 
-            with open(raw_infos, 'r', encoding='utf-8') as f:
+            with open(raw_infos_file, 'r', encoding='utf-8') as f:
                 lines = [l.rstrip('\n') for l in f.readlines()]
 
             urls_ifs[url] = {
@@ -253,7 +257,6 @@ class Stats(object):
                 'url': lines[6],
                 'w_count': int(lines[7]),
                 'ratio': int(lines[7]) // int(lines[0]),
-                'n_id': n_id,
             }
 
             try:
@@ -262,7 +265,7 @@ class Stats(object):
                 universes[lines[5]] = 1
 
             if display:
-                print(f'REGISTERED -- {lines[4]:60}',
+                print(f'REGISTERED -- {lines[4]:70}'
                       f'{str(i + 1).zfill(len(str(s_count)))} / {s_count}')
 
         counts = (s_count,

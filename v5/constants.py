@@ -2,8 +2,8 @@
 File: constants.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.1
-File version: 4.0
+App version: 5.0.2
+File version: 4.0.1
 
 Contains all the constants needed to make this app works.
 """
@@ -91,14 +91,15 @@ NEXT_REGEX = r'<a href=\'\d*.html\'>Next \(\d*/(\d*)\)</a> <em>.*</em>'
 
 # The header of each story file written by this program.
 STORY_HEADER = """<!DOCTYPE html>
- <html>
- <head>
+<html>
+<head>
     <meta charset="utf-8" />
     <style>
         * {
             font-family: "Helvetica";
             font-size: 15px;
             text-align: justify;
+            background-color: #dddddd;
         }
         body {
             min-width: 25em;
@@ -110,24 +111,25 @@ STORY_HEADER = """<!DOCTYPE html>
         }
 
         a {
-            text-color: blue;
+            color: #005b96;
             font-size: 20px;
         }
     </style>
- </head><body>\n"""
+</head><body>\n"""
 
 STATS_HEADER = """<!DOCTYPE html>
- <html>
- <head>
+<html>
+<head>
     <meta charset="utf-8" />
     <style>
         * {
             font-family: "Helvetica";
             font-size: 20px;
             text-align: left;
+            background-color: #dddddd;
         }
         h1 { font-size: 26px; }
-        a { text-color: blue; }
+        a { color: #005b96; }
         div { padding: 0px; }
         .story, .universe {
             width: 100%;
@@ -149,9 +151,13 @@ STATS_HEADER = """<!DOCTYPE html>
             word-wrap: break-word;
             font-style: italic;
         }
+        .inprogress {color: #bf0000; font-size: 16px; }
+        .complete {color: #008000; font-size: 16px; }
+        .uni_clr {color:#660066; font-size: 16px; }
+        .counts_clr {color:#009688; }
         em { font-size: 16px; }
     </style>
- </head><body>\n"""
+</head><body>\n"""
 
 ###############################################################################
 # Miscellaneous
