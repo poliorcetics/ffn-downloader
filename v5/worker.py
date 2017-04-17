@@ -2,14 +2,15 @@
 File: worker.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.2
-File version: 2.2
+App version: 5.0.3
+File version: 2.3
 
 Contains functions which can be used for real-life use of this app.
 Can also be used directly in a shell, see 'python3.6 worker.py help' for help.
 """
 
 import os
+import re
 import sys
 import story
 import stats
@@ -26,7 +27,6 @@ class OnComputer(object):
         update_infos_in_paths(self, paths: list)
         update_stats(self, paths: list, renew=False, main=True)
         update_stories(self, dic: dict)
-        finished_story(self)
         new_stories(self, dic)
 
     Public attribute:
@@ -41,7 +41,11 @@ class OnComputer(object):
             m_path (str): The path to the directory tree containing the
                           targeted fanfictions.
         """
-        self.M_PATH = m_path
+        # Ensure the path is properly formatted
+        path = re.sub(f'{os.sep}{os.sep}+', f'{os.sep}', m_path)
+        if path[-1] == os.sep:
+            path = path[:-1]
+        self.M_PATH = path
 
     def _get_full_path(self, path: str) -> str:
         """
@@ -56,6 +60,7 @@ class OnComputer(object):
         """
         if not(path[0] == '/' or path[1] == ':'):
             path = f'{self.M_PATH}{os.sep}{path}'
+
         return path
 
     def update_infos_in_paths(self, paths: list):
@@ -80,7 +85,7 @@ class OnComputer(object):
 
         os.chdir(base_dir)
 
-    def update_stats(self, paths: list, renew=False, main=True):
+    def update_stats(self, paths: list, renew=False, main=False):
         """
         Update the stats.html from all *paths* and then in *M_PATH* if asked,
         and only after having renewed the informations for each story in these
@@ -90,8 +95,12 @@ class OnComputer(object):
             paths (list): the paths where the stats must be renewed.
             renew[False] (bool): indicates if the informations are to be
                                  updated too.
-            main[True] (bool): indicates if the stats should be updated in
+            main[False] (bool): indicates if the stats should be updated in
                                *M_PATH* too.
+
+        N.B:
+            Even if the paths aren't full paths, the M_PATH variable is used to
+            complete them.
         """
         if renew:
             self.update_infos_in_paths(paths)
@@ -107,6 +116,7 @@ class OnComputer(object):
         # are done a second time obviously)
         if main:
             stats.Stats.write_stats(paths2, self.M_PATH, False)
+            print('\nMAIN STATS: DONE.')
 
     def update_stories(self, dic: dict):
         """
@@ -127,7 +137,11 @@ class OnComputer(object):
                            }
 
         N.B:
-            Also update the stats of the paths and the main path.
+            - Even if the path isn't a full path, the M_PATH variable is used
+            to complete it.
+            - Update the stats of the differents paths, but not the main stats
+            because if not all paths were given, those missing will not be
+            accounted for.
         """
 
         paths = sorted(dic.keys())
@@ -139,7 +153,7 @@ class OnComputer(object):
             for url in urls:
                 m.main(url, True)
 
-        self.update_stats(paths)
+        self.update_stats(paths, False, False)
 
     def new_stories(self, dic: dict):
         """
@@ -160,7 +174,11 @@ class OnComputer(object):
                            }
 
         N.B:
-            Also update the stats of the paths and the main path.
+            - Even if the path isn't a full path, the M_PATH variable is used
+            to complete it.
+            - Update the stats of the differents paths, but not the main stats
+            because if not all paths were given, those missing will not be
+            accounted for.
         """
 
         paths = sorted(dic.keys())
@@ -172,7 +190,7 @@ class OnComputer(object):
             for url in urls:
                 m.main(url)
 
-        self.update_stats(paths)
+        self.update_stats(paths, False, False)
 
 
 def get_help() -> str:
@@ -192,7 +210,7 @@ def get_help() -> str:
             '    ui: updates informations in multiple paths\n'
             '        Syntax for [...]: [path1] [path2] ...\n\n'
             '    ut: updates statistics in multiple paths\n'
-            '        Syntax for [...]: [renew] [main] [path1] [path2] ...\n\n'
+            '        Syntax for [...]: [renew] [path1] [path2] ...\n\n'
             '    us: updates stories in a single path\n'
             '        Syntax for [...]: [path] [url1/id1] [url2/id2] ...\n\n'
             '    ns: downloads new stories in a single path\n'
@@ -200,9 +218,13 @@ def get_help() -> str:
             '  - help: displays this help\n\n'
             'Note:\n'
             '•••••\n\n'
-            'It is possible to use either URLs or IDs to identify stories. '
+            '- It is possible to use either URLs or IDs to identify stories. '
             'It is also possible to mix the two type of identification without'
-            ' a problem.\n\n'
+            ' a problem.\n'
+            '- The main stats file will never be updated if you have one. That'
+            ' is because it can not find all story folders so to avoid errors '
+            'in counting them you will have to do it yourself separately if '
+            'you wish to update it.\n\n'
             'Example:\n'
             '••••••••\n\n'
             '(This examples assume you are in the correct directory to '
@@ -252,8 +274,8 @@ if __name__ == '__main__':
             oc.update_infos_in_paths(clean_paths(paths, fld))
 
         elif opt == 'ut':  # Update statistics
-            renew, main, paths = sys.argv[3], sys.argv[4], list(sys.argv[5:])
-            oc.update_stats(clean_paths(paths, fld), renew, main)
+            renew, paths = sys.argv[3], list(sys.argv[4:])
+            oc.update_stats(clean_paths(paths, fld), renew, False)
 
         elif opt == 'us':  # Update stories
             path, args = sys.argv[3], tuple(sys.argv[4:])

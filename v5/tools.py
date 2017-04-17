@@ -2,7 +2,7 @@
 File: func_tools.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.2
+App version: 5.0.3
 File version: 2.1
 
 Contains some functions needed to make the app works.

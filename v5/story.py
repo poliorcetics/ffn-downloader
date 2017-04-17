@@ -2,7 +2,7 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.2
+App version: 5.0.3
 File version: 2.0.2
 
 Contains the class 'Story' which handles the infomations and the downloading
