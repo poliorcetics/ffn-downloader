@@ -34,7 +34,7 @@ All files created by this application should be `.html` files or `plain text` fi
 
 ## II. What do I need to make it work ?
 
-In the current version (*v5.0*), you only need **Python 3.6 or higher**.
+In the current version (*5*), you only need **Python 3.6 or higher**.
 
 ## III. How to use it ?
 
@@ -175,7 +175,7 @@ Options:
         Syntax for [...]: [path1] [path2] ...
 
     ut: updates statistics in multiple paths
-        Syntax for [...]: [renew] [main] [path1] [path2] ...
+        Syntax for [...]: [renew] [path1] [path2] ...
 
     us: updates stories in a single path
         Syntax for [...]: [path] [url1/id1] [url2/id2] ...
@@ -188,7 +188,8 @@ Options:
 Note:
 •••••
 
-It is possible to use either URLs or IDs to identify stories. It is also possible to mix the two type of identification without a problem.
+- It is possible to use either URLs or IDs to identify stories. It is also possible to mix the two type of identification without a problem.
+- The main stats file will never be updated if you have one. That is because it can not find all story folders so to avoid errors in counting them you will have to do it yourself separately if you wish to update it.
 
 Example:
 ••••••••
