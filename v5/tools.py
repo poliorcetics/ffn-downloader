@@ -2,8 +2,8 @@
 File: func_tools.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.3
-File version: 2.1
+App version: 5.1.0
+File version: 2.2
 
 Contains some functions needed to make the app works.
 """
@@ -200,6 +200,6 @@ def clean(text: str) -> str:
     >>> clean('Shengc%C3%BAn')
     Shengcun
     """
-    trans = str.maketrans('àäâéèëêìïîòöôúùüûÿ',
-                          'aaaeeeeiiiooouuuuy')
+    trans = str.maketrans('àäâáãåāéèëêęėēìïîíįīòöôóøōúùüûūÿ',
+                          'aaaaaaaeeeeeeeiiiiiioooooouuuuuy')
     return urllib.parse.unquote(text, errors='strict').translate(trans)

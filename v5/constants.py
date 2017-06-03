@@ -2,8 +2,8 @@
 File: constants.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.3
-File version: 4.0.2
+App version: 5.1.0
+File version: 4.0.3
 
 Contains all the constants needed to make this app works.
 """
@@ -16,6 +16,9 @@ CORRECT_URL_REGEX = r'https://www.fanfiction.net/s/\d*/\d*/(.*)?'
 
 # To get the story author.
 AUTHOR_REGEX = r'By:</span> <a .*?>(.*?)</a>'
+
+# To get the author's ID
+AUTHOR_ID_REGEX = r'/u/(\d*)/'
 
 # To get the story universe.
 UNIVERSE_REGEX = r'<title>.*, a(n)? (.*) fanfic \| FanFiction</title>'
@@ -95,7 +98,7 @@ STORY_HEADER = """<!DOCTYPE html>
 <head>
     <meta charset="utf-8" />
     <style>
-        * {
+        *, .small {
             font-family: "Helvetica";
             font-size: 15px;
             text-align: justify;
@@ -112,8 +115,9 @@ STORY_HEADER = """<!DOCTYPE html>
 
         a {
             color: #005b96;
-            font-size: 20px;
+            font-size: 22px;
         }
+
     </style>
 </head><body>\n"""
 
@@ -162,5 +166,8 @@ STATS_HEADER = """<!DOCTYPE html>
 ###############################################################################
 # Miscellaneous
 
-# The root url to access to fanfiction.net.
+# The root url to access to fanfiction.net stories.
 ROOT_URL = "https://www.fanfiction.net/s/"
+
+# The root url to access to fanfiction.net authors.
+AUTH_URL = "https://www.fanfiction.net/u/"

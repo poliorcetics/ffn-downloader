@@ -140,7 +140,9 @@ REGISTERED -- Past and Future King                                         2/2
 DONE -- stats_example_2017-02-12.html
 ```
 
-Note: `new_stories` (in `worker.py`, class `OnComputer`) also create the statistics, as you can see in the example above.
+Note:
+- `new_stories` (in `worker.py`, class `OnComputer`) also create the statistics, as you can see in the example above.
+- The numbers may be different because time has passed since I did this example. It is to be expected and is perfectly normal.
 
 #### III.A.2: Updating stories.
 
@@ -205,7 +207,35 @@ This command will accomplish exactly the same task:
   python3.6 worker.py / ns ffn/ 1
 ```
 
-### III.C: Warning about statistics.
+### III.C: How to read a story.
+
+#### III.C.1: Selecting a story.
+
+To select a story, you should first open your stats file if you have more than a few stories: it will help you choose by giving you informations about the numbers of chapters and words, the ratio words per chapter (on average), the universe and the summary provided by the author of the story.
+
+#### III.C.2: The informations page.
+
+Once you have selected your story, if you have done it using a stats file, you will find yourself on the informations page. It gives you all the informations which could be found from the site.
+
+For example, you can go to the first chapter of the story using the URL provided or go to the author's page.
+
+Go down the page to find the chapters list, select a chapter and start reading.
+
+#### III.C.3: Reading a story.
+
+You have chosen to start this story but you see many things that are not the story itself on the page.
+
+Why ?
+
+First, the link that is the story's title brings back to the informations page. You can use it to jump chapters for example. This link exists at both the top and the bottom of each chapter.
+
+Then you will see the author's name as a link. It is a link to their page on fanfiction.net. Again, this link can be found at the top and the bottom of each chapter.
+
+At the top of each chapter (except the first one) you will find a *Previous* link with the precedent chapter's title next to it. Use it to go back a chapter.
+
+At the bottom of each chapter (except the last one) you will a *Next* link, with the next chapter's title next to it. Use to go further in the story, one chapter at a time.
+
+### III.D: Warning about statistics.
 
 Statistics are made based on raw informations files (named following this pattern: `.{numerical_id}`) present in each story directory so if you don't update these informations for a long time, you may not have up-to-date statistics.
 

@@ -2,7 +2,7 @@
 File: worker.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.3
+App version: 5.1.0
 File version: 2.3
 
 Contains functions which can be used for real-life use of this app.

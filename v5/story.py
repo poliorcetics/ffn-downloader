@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.0.3
-File version: 2.0.2
+App version: 5.1.0
+File version: 2.1.0
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -30,6 +30,7 @@ class Story(object):
 
     Public attributes:
         ifs (dict): keys: - auth    (str): Story author.
+                          - auth_id (str): Author's ID.
                           - c_count (int): Number of chapters.
                           - lang    (str): Language.
                           - chap    (list): Ordered list of the chapters.
@@ -77,6 +78,7 @@ class Story(object):
         # Informations are sorted alphabetically here
         self.ifs = {
             'auth': re.search(c.AUTHOR_REGEX, page).group(1),         # str
+            'auth_id': re.search(c.AUTHOR_ID_REGEX, page).group(1),   # str
             'c_count': Story._get_chap_count(tokens),                 # • int
             'lang': tokens.split(' - ')[2],                           # str
             'chap': re.findall(c.CHAPTERS_REGEX, page)[:chap_count],  # • list
@@ -268,15 +270,20 @@ class Story(object):
             date_obj = datetime.datetime(1, 1, 1)
             p_date = date_obj.today().strftime('%H:%M - %d %B %Y')
 
+            auth_url = f"{c.AUTH_URL}{self.ifs['auth_id']}/"
+
             # Informations are ready to be saved in a .html file
-            return (f"{c.STORY_HEADER}\n<h1>{self.ifs['title']}</h1><br/>\n"
+            return (f"{c.STORY_HEADER}\n"
+                    f"<h1>{self.ifs['title']}</h1><br/>\n"
                     f"<em><strong>Last infos update:</strong> {p_date}</em>"
-                    f"<br/><br/>\n<strong>By:</strong> {self.ifs['auth']}<br/>"
-                    f"\n<strong>URL:</strong> <a href='{self.ifs['url']}'>"
-                    f"{self.ifs['url']}</a><br/><br/>\n<strong>"
-                    f"Universe:</strong> <em>{self.ifs['uni']}</em><br/><br/>"
-                    f"\n{self.ifs['smry']}\n<br/><br/>\n<strong>Other "
-                    f"informations:</strong>\n<br/>{tk_formatted}<br/><br/>\n"
+                    f"<br/><br/>\n<strong>By:</strong> <a href='{auth_url}'>"
+                    f"{self.ifs['auth']}</a><br/>\n"
+                    f"<strong>URL:</strong> <a href='{self.ifs['url']}'>"
+                    f"{self.ifs['url']}</a><br/><br/>\n"
+                    f"<strong>Universe:</strong> <em>{self.ifs['uni']}</em>"
+                    f"<br/><br/>\n{self.ifs['smry']}\n<br/><br/>\n"
+                    f"<strong>Other infos:</strong>\n<br/>{tk_formatted}<br/>"
+                    f"<br/>\n"
                     f"<strong>Chapters ({self.ifs['c_count']}):</strong><br/>"
                     f"<ul>\n{toc}</ul>\n</body>\n</html>"
                     )
@@ -305,6 +312,10 @@ class Story(object):
         Returns:
             The formatted chapter, as a `str`.
         """
+
+        # lk is used for an internal link (to a local file)
+        # url is used for an external link (to FFN.net most likely)
+
         c_count = self.ifs['c_count']
         lgth = len(str(c_count))
         p_lk = ''  # Link to the previous chapter
@@ -325,9 +336,19 @@ class Story(object):
         else:
             c_title = self.ifs['title']
 
-        return (f"{c.STORY_HEADER}\n{p_lk}<br/>\n<em><strong>"
-                f"{self.ifs['title']}</strong> | {self.ifs['auth']}</em><br/>"
-                f"\n<h1>{c_title}</h1><br/>\n{c_text}<br/>"
+        auth_url = f"{c.AUTH_URL}{self.ifs['auth_id']}/"
+        ifs_lk = f"{self.ifs['t_id']}_infos.html"
+
+        # Link to the info file and to the author's page
+        links = (f"<em><strong><a href='{ifs_lk}' class='small'>"
+                 f"{self.ifs['title']}</a></strong> | <a href='{auth_url}' "
+                 f"class='small'>{self.ifs['auth']}</a></em><br/>\n"
+                 )
+
+        return (f"{c.STORY_HEADER}\n{p_lk}<br/>\n"
+                f"{links}"
+                f"<h1>{c_title}</h1><br/>\n{c_text}<br/>\n"
+                f"{links}"
                 f"{n_lk}\n</body>\n</html>"
                 )
 
