@@ -2,8 +2,8 @@
 File: func_tools.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.1.0
-File version: 2.2
+App version: 5.1.3
+File version: 2.3
 
 Contains some functions needed to make the app works.
 """
@@ -89,13 +89,13 @@ def get_page(url: str, display=True, max_tries=5) -> str:
                 raise urllib.error.URLError(f'[ERROR]: {error}')
             else:
                 if display:
-                    print(f'[ERROR]: {error}')
+                    print(f'[ERROR] not dealt with: {error}')
                 continue
         else:
             html = page.read().decode('utf-8')
             return re.sub(c.WRONG_SPACES_REGEX, ' ', html)
-
-    raise Exception('[ERROR]: An unkown error occured, sorry.')
+    else:
+        raise Exception('[ERROR]: An unkown error occured, sorry.')
 
 
 def display_num(num: float) -> (str):
@@ -200,6 +200,11 @@ def clean(text: str) -> str:
     >>> clean('Shengc%C3%BAn')
     Shengcun
     """
-    trans = str.maketrans('àäâáãåāéèëêęėēìïîíįīòöôóøōúùüûūÿ',
-                          'aaaaaaaeeeeeeeiiiiiioooooouuuuuy')
+
+    in_char = 'àäâáãåāéèëêęėēìïîíįīòöôóøōúùüûūÿñç\
+               ÀÄÂÁÃÅĀÉÈËÊĘĖĒÌÏÎÍĮĪÒÖÔÓØŌÚÙÜÛŪŸÑÇ'
+    out_char = 'aaaaaaaeeeeeeeiiiiiioooooouuuuuync\
+                AAAAAAAEEEEEEEIIIIIIOOOOOOUUUUUYNC'
+
+    trans = str.maketrans(in_char, out_char)
     return urllib.parse.unquote(text, errors='strict').translate(trans)

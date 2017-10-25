@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.1.0
-File version: 2.1.0
+App version: 5.1.3
+File version: 2.1.1
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -389,8 +389,8 @@ class StoryWriter(object):
 
     Public methods:
         write_infos(self, st: Story)
-        create(self, st: Story)
-        update(self, st: Story)
+        create(self, st: Story) -> (int)
+        update(self, st: Story) -> (int)
 
     Public attributes:
         self.display (bool): see above
@@ -452,13 +452,18 @@ class StoryWriter(object):
         if self.display:
             print(f"DONE -- {st.ifs['t_id']}_infos.html")
 
-    def create(self, st: Story):
+    def create(self, st: Story) -> (int):
         """
         Downloads a full story and creates all the files needed: infos/chaps.
 
         Args:
             st (Story): the story to download.
+
+        Returns:
+            0 - the story was added for the first time to the directory
+            1 - an older version was replaced
         """
+        replacement = 0
         s_dir = st.ifs['s_dir']
         try:
             os.mkdir(s_dir)
@@ -467,18 +472,27 @@ class StoryWriter(object):
                 os.remove(f'{s_dir}{os.sep}{file}')
             os.rmdir(s_dir)
             os.mkdir(s_dir)
+            replacement = 1
         finally:
             os.chdir(s_dir)
 
         self.write_infos(st)
         self._write_chapters(st, 1, st.ifs['c_count'] + 1)
 
-    def update(self, st: Story):
+        return replacement
+
+    def update(self, st: Story) -> (int):
         """
         Downloads the missing chapters of *st* and update informations about it
 
         Args:
             st (Story): the story which will be updated.
+
+        Returns:
+            0 - the story was updated correctly
+            1 - the story was already up-to-date
+            2 - the story was not in the directory, a full download has been
+                done
         """
 
         old_chap_files = []
@@ -489,7 +503,8 @@ class StoryWriter(object):
                 print('[ERROR]: Story was not present in the directory, full '
                       'download is now started.\n\n')
             self.create(st)
-            return
+            # Full download done
+            return 2
         else:
             for file in sorted(os.listdir()):
                 if re.fullmatch(c.CHAPTER_FILE_REGEX, file) is not None:
@@ -503,7 +518,8 @@ class StoryWriter(object):
         if old_chap_count == c_count:
             if self.display:
                 print('Story already up-to date. No actions undertaken.')
-            return
+            # Story already up-to-date
+            return 1
 
         # Update the old chapters to the new 'c_count' (In the 'previous' and
         # 'next' links)
@@ -535,6 +551,9 @@ class StoryWriter(object):
                 f.write(c_text)
 
         self._write_chapters(st, old_chap_count, c_count + 1)
+
+        # All good
+        return 0
 
     def update_infos(self, st: Story):
         """

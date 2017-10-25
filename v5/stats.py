@@ -2,7 +2,7 @@
 File: stats.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.1.0
+App version: 5.1.3
 File version: 2.1
 
 Contains the class 'Stats' which handles the creation of the statistics.

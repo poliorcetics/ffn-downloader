@@ -2,8 +2,8 @@
 File: worker.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.1.0
-File version: 2.3
+App version: 5.1.3
+File version: 2.3.2
 
 Contains functions which can be used for real-life use of this app.
 Can also be used directly in a shell, see 'python3.6 worker.py help' for help.
@@ -35,7 +35,7 @@ class OnComputer(object):
 
     def __init__(self, m_path: str):
         """
-        Initializes 'OnConputer'.
+        Initializes 'OnComputer'.
 
         Args:
             m_path (str): The path to the directory tree containing the
@@ -145,15 +145,28 @@ class OnComputer(object):
         """
 
         paths = sorted(dic.keys())
+        updated_stories = {}
 
         for path in paths:
             tls.chdir(self._get_full_path(path))
             urls = dic[path]
 
+            updated_stories[path] = []
+
             for url in urls:
-                m.main(url, True)
+                result = m.main(url, True)
+                # If the story was in need of an update, its url is saved
+                if result == 0:
+                    updated_stories[path].append(url)
 
         self.update_stats(paths, False, False)
+
+        # Print the updated stories, by folder
+        for path in updated_stories.keys():
+            if updated_stories[path] != []:
+                print(f'\n\nStories updated in: {path}\n')
+                for url in updated_stories[path]:
+                    print(f'     - {url}')
 
     def new_stories(self, dic: dict):
         """

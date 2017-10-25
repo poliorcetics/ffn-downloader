@@ -2,7 +2,7 @@
 File: constants.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.1.0
+App version: 5.1.3
 File version: 4.0.3
 
 Contains all the constants needed to make this app works.
