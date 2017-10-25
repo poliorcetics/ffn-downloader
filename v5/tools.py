@@ -201,10 +201,8 @@ def clean(text: str) -> str:
     Shengcun
     """
 
-    in_char = 'àäâáãåāéèëêęėēìïîíįīòöôóøōúùüûūÿñç\
-               ÀÄÂÁÃÅĀÉÈËÊĘĖĒÌÏÎÍĮĪÒÖÔÓØŌÚÙÜÛŪŸÑÇ'
-    out_char = 'aaaaaaaeeeeeeeiiiiiioooooouuuuuync\
-                AAAAAAAEEEEEEEIIIIIIOOOOOOUUUUUYNC'
+    in_char =  'àäâáãåāéèëêęėēìïîíįīòöôóøōúùüûūÿñçÀÄÂÁÃÅĀÉÈËÊĘĖĒÌÏÎÍĮĪÒÖÔÓØŌÚÙÜÛŪŸÑÇ'
+    out_char = 'aaaaaaaeeeeeeeiiiiiioooooouuuuuyncAAAAAAAEEEEEEEIIIIIIOOOOOOUUUUUYNC'
 
     trans = str.maketrans(in_char, out_char)
     return urllib.parse.unquote(text, errors='strict').translate(trans)

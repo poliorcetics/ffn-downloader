@@ -3,7 +3,7 @@ File: example.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
 App version: 5.1.3
-File version: 1.0
+File version: 1.1
 
 Contains an example of the use of this app.
 """
@@ -17,8 +17,8 @@ def example():
     oc = w.OnComputer(path)
 
     oc.new_stories({
-        path: ['https://www.fanfiction.net/s/8956689/1/Past-and-Future-King',
-               'https://www.fanfiction.net/s/9141379/1/A-New-Chosen-One'],
+        path: ['https://www.fanfiction.net/s/3677636/1/Remember',
+               'https://www.fanfiction.net/s/5522734/1/It-s-That-Time'],
         })
 
 if __name__ == '__main__':

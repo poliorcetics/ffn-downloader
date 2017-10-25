@@ -3,7 +3,7 @@ File: stats.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
 App version: 5.1.3
-File version: 2.1
+File version: 2.1.1
 
 Contains the class 'Stats' which handles the creation of the statistics.
 """
@@ -133,11 +133,13 @@ class Stats(object):
         else:
             status = f"<span class='inprogress'>{story['status']}</span>"
 
+        s = '' if c_count == '1' else 's'
+
         return ("\n<div class='story'>\n"
                 f"<div class='s_title'>• <a href='{url}'>{story['title']}</a>"
                 f"<br/>\n<em>{universe} — {status}</em></div>\n"
                 f"<div class='s_words counts_clr'>{w_count} words</div>\n"
-                f"<div class='s_chap counts_clr'>{c_count} chapters</div>\n"
+                f"<div class='s_chap counts_clr'>{c_count} chapter{s}</div>\n"
                 f"<div class='s_ratio counts_clr'>~{ratio} w/c</div>\n</div>\n"
                 f"<div class='s_summary'>    {story['smry']}</div><br/>\n"
                 )
