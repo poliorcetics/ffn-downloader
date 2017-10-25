@@ -27,7 +27,7 @@ SOFTWARE.**
 
 ## I. What does it do ?
 
-1. It allows you to download any story from [fanfiction.net](https://www.fanfiction.net) (well, probably, it wasn't really tested that far, just with a few hundreds of them).
+1. It allows you to download any story from [fanfiction.net](https://www.fanfiction.net) (well, probably, it wasn't really tested that far, just with a few millions of them).
 2. It also allows you to make statistics from a group a stories. (See below, **III. How to use it ?**, and the provided example)
 
 All files created by this application should be `.html` files or `plain text` files. Furthermore, if correctly used (see `example.py` and the documentation for further precisions), you should always be able to tell what files and folders were created/modified/deleted by the application. DO NOT HESITATE TO ASK FOR TIPS AND INFORMATIONS, I will answer as soon and as clearly as I can.
@@ -43,8 +43,8 @@ In the current version (*5*), you only need **Python 3.6 or higher**.
 #### III.A.1: Downloading stories.
 
 I will use two stories as examples:
- - [Past and Future King, 1 chapter, one universe](https://www.fanfiction.net/s/8956689/1/Past-and-Future-King),
- - [A New Chosen One, 16 chapters, crossover](https://www.fanfiction.net/s/9141379/1/A-New-Chosen-One).
+ - [Remember, 1 chapter, one universe](https://www.fanfiction.net/s/3677636/1/Remember),
+ - [It's that time, 2 chapters, one universe](https://www.fanfiction.net/s/5522734/1/It-s-That-Time).
 
 Let's look at `example.py`:
 
@@ -59,9 +59,9 @@ def example():
     oc = w.OnComputer(path)
 
     oc.new_stories({
-        path: ['https://www.fanfiction.net/s/8956689/1/Past-and-Future-King',
-               'https://www.fanfiction.net/s/9141379/1/A-New-Chosen-One'],
-        })    
+        path: ['https://www.fanfiction.net/s/3677636/1/Remember',
+               'https://www.fanfiction.net/s/5522734/1/It-s-That-Time'],
+        })
 
 if __name__ == '__main__':
     example()
@@ -75,69 +75,41 @@ Now run `python3.6 example.py` in a shell or build it directly. Here's what you 
 
 ________________________________________________________________________________
 
-Title:      PAST AND FUTURE KING
-From:       One Piece
-Author:     Kitsune Foxfire
-Url:        https://www.fanfiction.net/s/8956689/1/Past-and-Future-King
-Tokens:     Rated: Fiction K - English - Gol D. Roger, Luffy - Words: 6,875 - Reviews: 112 - Favs: 1,611 - Follows: 352 - Published: 1/28/2013 - Status: Complete - id: 8956689
+Title:      REMEMBER
+From:       Harry Potter
+Author:     Marquis Black
+Url:        https://www.fanfiction.net/s/3677636/1/Remember
+Tokens:     Rated: Fiction M - English - Drama/Angst - Words: 1,188 - Reviews: 9 - Favs: 27 - Follows: 13 - Published: 7/24/2007 - Status: Complete - id: 3677636
 
-A pirate on the Grand Line should know to expect the unexpected, particularly when he is the King. Little did Roger know just how unexpected the results of calling out to a stranger in the fog would be. Who knew there were islands that could warp time? This meeting would always be one of his treasures. Oneshot
+Enter the mind of one of the left behind those who, while others march off to war, stay at home. What do they think of when the war ends? Rating for allusions to suggestive situations. AU. Oneshot.
 
 
-DONE -- Past-and-Future-King_infos.html
+DONE -- Remember_infos.html
 DOWNLOADED -- n° 1 /1
 SAVED.
 
 ________________________________________________________________________________
 
-Title:      A NEW CHOSEN ONE
-From:       Star Wars + Harry Potter Crossover
-Author:     ficfan11
-Url:        https://www.fanfiction.net/s/9141379/1/A-New-Chosen-One
-Tokens:     Rated: Fiction T - English - Romance/Adventure - [Padmé Amidala, Harry P.] - Chapters: 16 - Words: 46,832 - Reviews: 150 - Favs: 629 - Follows: 748 - Updated: 1/29/2014 - Published: 3/27/2013 - Status: In Progress - id: 9141379
+Title:      IT'S THAT TIME
+From:       One Piece
+Author:     elvenarchress
+Url:        https://www.fanfiction.net/s/5522734/1/It-s-That-Time
+Tokens:     Rated: Fiction K+ - English - Humor - Straw Hats P., Luffy - Chapters: 2 - Words: 2,861 - Reviews: 114 - Favs: 734 - Follows: 148 - Updated: 12/16/2009 - Published: 11/20/2009 - Status: Complete - id: 5522734
 
-A Harry Potter/Starwars fanfic. Lily sent Harry to a galaxy far far away to be trained in the ways of the Jedi and to escape the corrupt wizarding world. An adventure story with Harry as the Chosen One and a Harry/Padme romance.
+AU: gender reversed!Straw Hats When it's that time of the month, a new Marine recruit learns just why they should stay far, far away...Full List UP!
 
 
-DONE -- A-New-Chosen-One_infos.html
-DOWNLOADED -- n° 01 /16
+DONE -- It-s-That-Time_infos.html
+DOWNLOADED -- n° 1 /2
 SAVED.
-DOWNLOADED -- n° 02 /16
-SAVED.
-DOWNLOADED -- n° 03 /16
-SAVED.
-DOWNLOADED -- n° 04 /16
-SAVED.
-DOWNLOADED -- n° 05 /16
-SAVED.
-DOWNLOADED -- n° 06 /16
-SAVED.
-DOWNLOADED -- n° 07 /16
-SAVED.
-DOWNLOADED -- n° 08 /16
-SAVED.
-DOWNLOADED -- n° 09 /16
-SAVED.
-DOWNLOADED -- n° 10 /16
-SAVED.
-DOWNLOADED -- n° 11 /16
-SAVED.
-DOWNLOADED -- n° 12 /16
-SAVED.
-DOWNLOADED -- n° 13 /16
-SAVED.
-DOWNLOADED -- n° 14 /16
-SAVED.
-DOWNLOADED -- n° 15 /16
-SAVED.
-DOWNLOADED -- n° 16 /16
+DOWNLOADED -- n° 2 /2
 SAVED.
 
 ---- FOLDER: example ----
 
-REGISTERED -- A New Chosen One                                             1/2
-REGISTERED -- Past and Future King                                         2/2
-DONE -- stats_example_2017-02-12.html
+REGISTERED -- It's That Time                                                        1 / 2
+REGISTERED -- Remember                                                              2 / 2
+DONE -- stats_example_2017-10-25.html
 ```
 
 Note:
@@ -249,5 +221,7 @@ If you get the following error message: **`[SSL: CERTIFICATE_VERIFY_FAILED]`** w
 
 1. Go to the directory where your copy of Python 3.6 is installed.
 2. Run `Install Certificates.command`.
+
+This problem was present in the very first release of Python 3.6, if you've got an up-to-date version, you shouldn't have any problem.
 
 If it still doesn't work, I don't have a solution for you, sorry.
