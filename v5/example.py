@@ -2,7 +2,7 @@
 File: example.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.1.3
+App version: 5.2.0
 File version: 1.1
 
 Contains an example of the use of this app.

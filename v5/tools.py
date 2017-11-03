@@ -2,8 +2,8 @@
 File: func_tools.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.1.3
-File version: 2.3
+App version: 5.2.0
+File version: 2.4
 
 Contains some functions needed to make the app works.
 """
@@ -45,7 +45,7 @@ def is_url(url: str) -> bool:
     Returns:
         True if the url is correct (in appearance) else False.
     """
-    return True if re.match(c.CORRECT_URL_REGEX, url) is not None else False
+    return re.match(c.CORRECT_URL_REGEX, url) is not None
 
 
 def id_to_url(id_: str) -> str:
@@ -76,26 +76,28 @@ def get_page(url: str, display=True, max_tries=5) -> str:
         (See constants.py *WRONG_SPACES_REGEX* for more informations)
 
     Raises:
-        urllib.error.URLError(f'[ERROR]: {error}')
-        Exception('[ERROR]: An unkown error occured, sorry.')
+        urllib.error.HTTPError
+        Exception('Error not encountered yet.')
     """
     for _ in range(max_tries):
         try:
             page = urllib.request.urlopen(url, timeout=5)
+        # Just caught to be able to display the error and be sure not to try
+        # several times
+        except urllib.error.HTTPError as error:
+            if display:
+                print(f'[ERROR]: {error}')
+            raise error
         except Exception as error:
-            if '404' in str(error) or 'thread' in str(error):
-                if display:
-                    print(f'[ERROR]: {error}')
-                raise urllib.error.URLError(f'[ERROR]: {error}')
-            else:
-                if display:
-                    print(f'[ERROR] not dealt with: {error}')
-                continue
+            if display:
+                print(f'[ERROR] not dealt with: {error}')
+            continue
+        # In case everything has gone well until now
         else:
             html = page.read().decode('utf-8')
             return re.sub(c.WRONG_SPACES_REGEX, ' ', html)
     else:
-        raise Exception('[ERROR]: An unkown error occured, sorry.')
+        raise Exception('Error not encountered yet.')
 
 
 def display_num(num: float) -> (str):
@@ -201,8 +203,9 @@ def clean(text: str) -> str:
     Shengcun
     """
 
-    in_char =  'àäâáãåāéèëêęėēìïîíįīòöôóøōúùüûūÿñçÀÄÂÁÃÅĀÉÈËÊĘĖĒÌÏÎÍĮĪÒÖÔÓØŌÚÙÜÛŪŸÑÇ'
-    out_char = 'aaaaaaaeeeeeeeiiiiiioooooouuuuuyncAAAAAAAEEEEEEEIIIIIIOOOOOOUUUUUYNC'
+    in_char = 'àäâáãåāéèëêęėēìïîíįīòöôóøōúùüûūÿñç'
+    out_char = 'aaaaaaaeeeeeeeiiiiiioooooouuuuuync'
 
-    trans = str.maketrans(in_char, out_char)
+    trans = str.maketrans(in_char + in_char.upper(),
+                          out_char + out_char.upper())
     return urllib.parse.unquote(text, errors='strict').translate(trans)

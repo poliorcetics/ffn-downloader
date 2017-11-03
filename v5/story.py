@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.1.3
-File version: 2.1.1
+App version: 5.2.0
+File version: 2.2.0
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -58,19 +58,26 @@ class Story(object):
             url (str): the url to use.
 
         Raises:
-            ValueError: *url* is not valid.
+            ValueError(f"{url} is not a valid fanfiction.net URL for a story")
+            urllib.error.HTTPError
+            ValueError(f"{url} is not the URL of an accessible story.")
         """
 
         if not tls.is_url(url):
-            raise ValueError(f"'{url}' is not valid.")
+            raise ValueError(f"{url} is not a valid fanfiction.net URL for a "
+                             "story.")
 
-        page = tls.get_page(url)
+        try:
+            page = tls.get_page(url)
+        except urllib.error.HTTPError as e:
+            raise e
 
-        num_id = url.split('/')[4]
+        # Here I get the informations which will be needed to create self.ifs
         try:
             text_id = tls.clean(re.search(c.TEXT_ID_REGEX, page).group(1))
         except AttributeError:
-            raise ValueError(f"'{url}' is not valid.")
+            raise ValueError(f"{url} is not the URL of an accessible story.")
+        num_id = url.split('/')[4]
         tokens = Story._get_tokens(page)
         chap_count = Story._get_chap_count(tokens)
         status = Story._get_status(tokens)
