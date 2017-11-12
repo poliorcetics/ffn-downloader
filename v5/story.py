@@ -3,7 +3,7 @@ File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
 App version: 5.2.0
-File version: 2.2.0
+File version: 2.2.1
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -13,6 +13,7 @@ handles the downloading/updating part.
 import re
 import os
 import datetime
+import urllib
 import constants as c
 import tools as tls
 
@@ -431,7 +432,8 @@ class StoryWriter(object):
             text = st.get_chapter(c_num)
 
             if self.display:
-                print(f"DOWNLOADED -- n° {str(c_num).zfill(lgth)} /{c_count}")
+                print(f"DOWNLOADED: n° {str(c_num).zfill(lgth)} /{c_count}",
+                      end=' -- ')
 
             with open(f_title, 'w', encoding='utf-8') as f:
                 f.write(text)
