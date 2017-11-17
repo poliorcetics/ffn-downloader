@@ -26,10 +26,9 @@ def main(url: str, update=False, display=True) -> (int):
             0 - the story was added for the first time to the directory
             1 - an older version was replaced
         In case *update* is True:
-            0 - the story was updated correctly
-            1 - the story was already up-to-date
-            2 - the story was not in the directory, a full download has been
-                done
+            0 - the story was added for the first time to the directory
+            1 - the story was updated correctly
+            2 - the story was already up-to-date
     """
     base_dir = os.getcwd()
     st = story.Story(url)

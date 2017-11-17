@@ -3,7 +3,7 @@ File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
 App version: 5.2.0
-File version: 2.2.1
+File version: 2.2.2
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -498,10 +498,9 @@ class StoryWriter(object):
             st (Story): the story which will be updated.
 
         Returns:
-            0 - the story was updated correctly
-            1 - the story was already up-to-date
-            2 - the story was not in the directory, a full download has been
-                done
+            0 - the story was added for the first time to the directory
+            1 - the story was updated correctly
+            2 - the story was already up-to-date
         """
 
         old_chap_files = []
@@ -513,7 +512,7 @@ class StoryWriter(object):
                       'download is now started.\n\n')
             self.create(st)
             # Full download done
-            return 2
+            return 0
         else:
             for file in sorted(os.listdir()):
                 if re.fullmatch(c.CHAPTER_FILE_REGEX, file) is not None:
@@ -528,7 +527,7 @@ class StoryWriter(object):
             if self.display:
                 print('Story already up-to date. No actions undertaken.')
             # Story already up-to-date
-            return 1
+            return 2
 
         # Update the old chapters to the new 'c_count' (In the 'previous' and
         # 'next' links)
@@ -562,7 +561,7 @@ class StoryWriter(object):
         self._write_chapters(st, old_chap_count, c_count + 1)
 
         # All good
-        return 0
+        return 1
 
     def update_infos(self, st: Story):
         """
