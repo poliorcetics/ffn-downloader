@@ -2,8 +2,8 @@
 File: stats.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.2.0
-File version: 2.1.1
+App version: 5.3.0
+File version: 2.1.2
 
 Contains the class 'Stats' which handles the creation of the statistics.
 """
@@ -91,7 +91,7 @@ class Stats(object):
                 )
 
     @staticmethod
-    def _get_story_div(story: dict, link: str) -> str:
+    def _get_story_div(story: dict, link: str, pos: int) -> str:
         """
         Returns a story html div.
 
@@ -136,12 +136,14 @@ class Stats(object):
         s = '' if c_count == '1' else 's'
 
         return ("\n<div class='story'>\n"
-                f"<div class='s_title'>• <a href='{url}'>{story['title']}</a>"
+                f"<div class='s_title'>({pos}) "
+                f"<a href='{url}'>{story['title']}</a>"
                 f"<br/>\n<em>{universe} — {status}</em></div>\n"
                 f"<div class='s_words counts_clr'>{w_count} words</div>\n"
                 f"<div class='s_chap counts_clr'>{c_count} chapter{s}</div>\n"
                 f"<div class='s_ratio counts_clr'>~{ratio} w/c</div>\n</div>\n"
                 f"<div class='s_summary'>    {story['smry']}</div><br/>\n"
+                "<hr size=1 noshade><br/>\n"
                 )
 
     @staticmethod
@@ -192,8 +194,8 @@ class Stats(object):
             text += Stats._get_uni_div(uni, unvrs[uni])
 
         text += Stats._get_stories_intro()
-        for story in tls.sort_urls(stories.keys()):
-            text += Stats._get_story_div(stories[story], link)
+        for i, story in enumerate(tls.sort_urls(stories.keys())):
+            text += Stats._get_story_div(stories[story], link, i)
 
         text += '</body>\n</html>'
 

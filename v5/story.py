@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.2.0
-File version: 2.2.2
+App version: 5.3.0
+File version: 2.3.0
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -93,10 +93,10 @@ class Story(object):
             'n_id': num_id,                                           # str
             'publ': re.search(c.PUBLISHED_REGEX, tokens).group(1),    # str
             'rating': tokens.split(' - ')[1],                         # str
+            's_dir': f'{text_id}_{num_id}'.lower(),                   # str
             'status': Story._get_status(tokens),                      # str
-            's_dir': f'{text_id}_{num_id}',                           # str
             'smry': re.search(c.SUMMARY_REGEX, page).group(1),        # str
-            't_id': text_id,                                          # str
+            't_id': text_id.lower(),                                  # str
             'title': re.search(c.STORY_TITLE_REGEX, page).group(1),   # str
             'tk': Story._insert_status(tokens, status),               # str
             'uni': Story._get_universe(page),                         # str
@@ -279,9 +279,10 @@ class Story(object):
             p_date = date_obj.today().strftime('%H:%M - %d %B %Y')
 
             auth_url = f"{c.AUTH_URL}{self.ifs['auth_id']}/"
+            page_title = self.ifs['title'] + ' | Informations'
 
             # Informations are ready to be saved in a .html file
-            return (f"{c.STORY_HEADER}\n"
+            return (f"{c.STORY_HEADER.format(ttl=page_title)}\n"
                     f"<h1>{self.ifs['title']}</h1><br/>\n"
                     f"<em><strong>Last infos update:</strong> {p_date}</em>"
                     f"<br/><br/>\n<strong>By:</strong> <a href='{auth_url}'>"
@@ -328,8 +329,10 @@ class Story(object):
         lgth = len(str(c_count))
         p_lk = ''  # Link to the previous chapter
         n_lk = ''  # Link to the next chapter
+        page_title = self.ifs['title']
         if c_count > 1:
             c_title = self.ifs['chap'][c_num - 1]
+            page_title += f' | Ch. {c_title}'
             if c_num > 1:
                 p_lk = (f"<a href='{str(c_num - 1).zfill(lgth)}.html'>"
                         f"Previous ({c_num - 1}/{c_count})</a> "
@@ -343,6 +346,7 @@ class Story(object):
                         )
         else:
             c_title = self.ifs['title']
+            page_title += f' | Ch. 1'
 
         auth_url = f"{c.AUTH_URL}{self.ifs['auth_id']}/"
         ifs_lk = f"{self.ifs['t_id']}_infos.html"
@@ -353,11 +357,11 @@ class Story(object):
                  f"class='small'>{self.ifs['auth']}</a></em><br/>\n"
                  )
 
-        return (f"{c.STORY_HEADER}\n{p_lk}<br/>\n"
-                f"{links}"
+        return (f"{c.STORY_HEADER.format(ttl=page_title)}\n{p_lk}<br/>\n"
+                f"{links}\n<hr size=1 noshade>\n"
                 f"<h1>{c_title}</h1><br/>\n{c_text}<br/>\n"
-                f"{links}"
-                f"{n_lk}\n</body>\n</html>"
+                f"<hr size=1 noshade>\n{links}"
+                f"{n_lk}\n</div>\n</body>\n</html>"
                 )
 
     def get_chapter(self, c_num: int) -> str:
@@ -410,6 +414,18 @@ class StoryWriter(object):
         """
         self.display = display
 
+    @staticmethod
+    def _write_css():
+        """
+        Write the CSS file used for the files.
+        """
+
+        try:
+            with open('style.css', 'w', encoding='utf-8') as f:
+                f.write(c.STORY_CSS)
+        except FileExistsError:
+            pass
+
     def _write_chapters(self, st: Story, frm: int, to: int):
         """
         Writes chapters of story *st* from *frm* to *to*.
@@ -452,14 +468,16 @@ class StoryWriter(object):
             Assumes the current directory is the valid one.
         """
 
-        with open(f".{st.ifs['n_id']}", 'w', encoding='utf-8') as f:
+        file_title = f".{st.ifs['n_id']}"
+        with open(file_title, 'w', encoding='utf-8') as f:
             f.write(st.get_infos('s'))
 
-        with open(f"{st.ifs['t_id']}_infos.html", 'w', encoding='utf-8') as f:
+        file_title = f"{st.ifs['t_id']}_infos.html"
+        with open(file_title, 'w', encoding='utf-8') as f:
             f.write(st.get_infos('h'))
 
         if self.display:
-            print(f"DONE -- {st.ifs['t_id']}_infos.html")
+            print(f"DONE -- {file_title}")
 
     def create(self, st: Story) -> (int):
         """
@@ -485,6 +503,7 @@ class StoryWriter(object):
         finally:
             os.chdir(s_dir)
 
+        StoryWriter._write_css()
         self.write_infos(st)
         self._write_chapters(st, 1, st.ifs['c_count'] + 1)
 
@@ -518,6 +537,7 @@ class StoryWriter(object):
                 if re.fullmatch(c.CHAPTER_FILE_REGEX, file) is not None:
                     old_chap_files.append(file)
 
+        StoryWriter._write_css()
         self.write_infos(st)
 
         old_chap_count = len(old_chap_files)

@@ -2,8 +2,8 @@
 File: constants.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.2.0
-File version: 4.0.3
+App version: 5.3.0
+File version: 4.1.0
 
 Contains all the constants needed to make this app works.
 """
@@ -13,6 +13,9 @@ Contains all the constants needed to make this app works.
 
 # To check if the url does represent a fanfiction.
 CORRECT_URL_REGEX = r'https://www.fanfiction.net/s/\d*/\d*/(.*)?'
+
+# To check if the url is a 'mobile' one
+MOBILE_URL_REGEX = r'https://m.fanfiction.net/s/\d*/\d*/(.*)?'
 
 # To get the story author.
 AUTHOR_REGEX = r'By:</span> <a .*?>(.*?)</a>'
@@ -90,51 +93,72 @@ PREVIOUS_REGEX = r'<a href=\'\d*.html\'>Previous \(\d*/(\d*)\)</a> <em>.*</em>'
 NEXT_REGEX = r'<a href=\'\d*.html\'>Next \(\d*/(\d*)\)</a> <em>.*</em>'
 
 ###############################################################################
-# Following are some html headers
+# Following are some css stylesheet and html headers
 
-# The header of each story file written by this program.
+# The CSS for each story file and the infos file.
+STORY_CSS = """\
+*, body {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 1.0em;
+    font-family : 'Helvetica', Arial, Verdana, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: none;
+    line-height: normal;
+    word-wrap: break-word;
+    background-color: #dfdfdf;
+    text-align: justify;
+    min-width: 25em;
+    max-width: 30em;
+}
+strong { font-weight: bold }
+em { font-style: italic }
+h1 {
+    font-size: 1.5em;
+    text-align: left;
+}
+a {
+    color: #005b96;
+    font-size: 1.25em;
+}
+.content {
+    margin: 0.2em 0.5em 0.8em 0.5em;
+    padding:0 0.5em 0 0.5em;
+}
+"""
+
+# The header of each story file and infos file written by this program.
+# NOTE: This is a 'format-able' string.
 STORY_HEADER = """<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
-    <style>
-        *, .small {
-            font-family: "Helvetica";
-            font-size: 15px;
-            text-align: justify;
-            background-color: #dfdfdf;
-        }
-        body {
-            min-width: 25em;
-            max-width: 30em;
-        }
-        h1 {
-            font-size: 26px;
-            text-align: left;
-        }
+    <title>{ttl}</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
-        a {
-            color: #005b96;
-            font-size: 22px;
-        }
-
-    </style>
-</head><body>\n"""
+<body>
+<div role='main' class='content' id='storytext' align=center>
+"""
 
 STATS_HEADER = """<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <style>
         * {
-            font-family: "Helvetica";
-            font-size: 20px;
+            font-family : 'Helvetica', Arial, Verdana, sans-serif;
+            font-size: 1.0em;
             text-align: left;
             background-color: #dfdfdf;
         }
-        h1 { font-size: 26px; }
+        h1 { font-size: 1.5em; }
         a { color: #005b96; }
-        div { padding: 0px; }
+        div { padding: 0; }
+        em { font-size: 0.95em; }
         .story, .universe {
             width: 100%;
             display: flex;
@@ -155,13 +179,15 @@ STATS_HEADER = """<!DOCTYPE html>
             word-wrap: break-word;
             font-style: italic;
         }
-        .inprogress {color: #bf0000; font-size: 16px; }
-        .complete {color: #008000; font-size: 16px; }
-        .uni_clr {color:#660066; font-size: 16px; }
-        .counts_clr {color:#009688; }
-        em { font-size: 16px; }
+        .inprogress { color: #bf0000; font-size: 0.95em; }
+        .complete { color: #008000; font-size: 0.95em; }
+        .uni_clr { color:#660066; font-size: 0.95em; }
+        .counts_clr { color:#009688; }
     </style>
-</head><body>\n"""
+</head>
+
+<body>
+"""
 
 ###############################################################################
 # Miscellaneous

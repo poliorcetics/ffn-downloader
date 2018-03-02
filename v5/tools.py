@@ -2,8 +2,8 @@
 File: func_tools.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.2.0
-File version: 2.4
+App version: 5.3.0
+File version: 2.5
 
 Contains some functions needed to make the app works.
 """
@@ -11,6 +11,7 @@ Contains some functions needed to make the app works.
 import urllib.request
 import urllib.error
 import urllib.parse
+import socket
 import re
 import os
 import constants as c
@@ -45,6 +46,9 @@ def is_url(url: str) -> bool:
     Returns:
         True if the url is correct (in appearance) else False.
     """
+    if re.match(c.MOBILE_URL_REGEX, url) is not None:
+        url = url.replace('://m', '://www')
+
     return re.match(c.CORRECT_URL_REGEX, url) is not None
 
 
@@ -84,13 +88,19 @@ def get_page(url: str, display=True, max_tries=5) -> str:
             page = urllib.request.urlopen(url, timeout=5)
         # Just caught to be able to display the error and be sure not to try
         # several times
-        except urllib.error.HTTPError as error:
+        except urllib.error.HTTPError as err:
             if display:
-                print(f'[ERROR]: {error}')
-            raise error
-        except Exception as error:
+                print(f'[ERROR]: {err}')
+            raise err
+        except urllib.error.URLError as err:
             if display:
-                print(f'[ERROR] not dealt with: {error}')
+                print(f'[ERROR]: URLError: {err}')
+        except socket.timeout as err:
+            if display:
+                print(f'[ERROR]: TimeoutError: {err}')
+        except Exception as err:
+            if display:
+                print(f'[ERROR] not dealt with: {type(err)}: {err}')
             continue
         # In case everything has gone well until now
         else:
