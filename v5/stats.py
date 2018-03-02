@@ -2,8 +2,8 @@
 File: stats.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.0
-File version: 2.1.2
+App version: 5.3.1
+File version: 2.1.3
 
 Contains the class 'Stats' which handles the creation of the statistics.
 """
@@ -138,12 +138,12 @@ class Stats(object):
         return ("\n<div class='story'>\n"
                 f"<div class='s_title'>({pos}) "
                 f"<a href='{url}'>{story['title']}</a>"
-                f"<br/>\n<em>{universe} — {status}</em></div>\n"
+                f"<br/>\n{universe} — {status}</div>\n"
                 f"<div class='s_words counts_clr'>{w_count} words</div>\n"
                 f"<div class='s_chap counts_clr'>{c_count} chapter{s}</div>\n"
                 f"<div class='s_ratio counts_clr'>~{ratio} w/c</div>\n</div>\n"
                 f"<div class='s_summary'>    {story['smry']}</div><br/>\n"
-                "<hr size=1 noshade><br/>\n"
+                "<hr size='1' noshade><br/>\n"
                 )
 
     @staticmethod

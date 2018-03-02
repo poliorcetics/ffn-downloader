@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.0
-File version: 2.3.0
+App version: 5.3.1
+File version: 2.4.1
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -268,7 +268,7 @@ class Story(object):
                     toc += (f"<li><a href='{str(num).zfill(lgth)}.html'>"
                             f"{self.ifs['chap'][num - 1]}</a></li>\n")
             else:
-                toc = f"<li><a href='1.html'>{self.ifs['title']}</a></li>\n"
+                toc = f"<li><a href='1.html'>{self.ifs['title']}</a></li>"
 
             return toc
 
@@ -282,20 +282,19 @@ class Story(object):
             page_title = self.ifs['title'] + ' | Informations'
 
             # Informations are ready to be saved in a .html file
-            return (f"{c.STORY_HEADER.format(ttl=page_title)}\n"
-                    f"<h1>{self.ifs['title']}</h1><br/>\n"
-                    f"<em><strong>Last infos update:</strong> {p_date}</em>"
-                    f"<br/><br/>\n<strong>By:</strong> <a href='{auth_url}'>"
-                    f"{self.ifs['auth']}</a><br/>\n"
-                    f"<strong>URL:</strong> <a href='{self.ifs['url']}'>"
-                    f"{self.ifs['url']}</a><br/><br/>\n"
-                    f"<strong>Universe:</strong> <em>{self.ifs['uni']}</em>"
-                    f"<br/><br/>\n{self.ifs['smry']}\n<br/><br/>\n"
-                    f"<strong>Other infos:</strong>\n<br/>{tk_formatted}<br/>"
-                    f"<br/>\n"
-                    f"<strong>Chapters ({self.ifs['c_count']}):</strong><br/>"
-                    f"<ul>\n{toc}</ul>\n</body>\n</html>"
-                    )
+            return c.INFOS_TEMPLATE.format(ttl=page_title,
+                                           ffn_title=self.ifs['title'],
+                                           p_date=p_date,
+                                           auth_url=auth_url,
+                                           author=self.ifs['auth'],
+                                           ffn_url=self.ifs['url'],
+                                           universe=self.ifs['uni'],
+                                           summary=self.ifs['smry'],
+                                           tk_formatted=tk_formatted,
+                                           chap_count=self.ifs['c_count'],
+                                           toc=toc
+                                           ).replace('CSS_STYLE_INSERT',
+                                                     c.INFOS_CSS)
         elif mode == 's':
             # Informations are ready to be saved in plain text file
             return (f"{self.ifs['c_count']}\n"
@@ -321,15 +320,20 @@ class Story(object):
         Returns:
             The formatted chapter, as a `str`.
         """
-
+        # NOTE:
         # lk is used for an internal link (to a local file)
         # url is used for an external link (to FFN.net most likely)
+
+        # Some hard formatting, allow for better readability in Web Inspectors
+        c_text = c_text.replace('<p>', '\n<p>\n    ')
+        c_text = c_text.replace('</p>', '\n</p>')
 
         c_count = self.ifs['c_count']
         lgth = len(str(c_count))
         p_lk = ''  # Link to the previous chapter
         n_lk = ''  # Link to the next chapter
         page_title = self.ifs['title']
+
         if c_count > 1:
             c_title = self.ifs['chap'][c_num - 1]
             page_title += f' | Ch. {c_title}'
@@ -352,17 +356,17 @@ class Story(object):
         ifs_lk = f"{self.ifs['t_id']}_infos.html"
 
         # Link to the info file and to the author's page
-        links = (f"<em><strong><a href='{ifs_lk}' class='small'>"
-                 f"{self.ifs['title']}</a></strong> | <a href='{auth_url}' "
-                 f"class='small'>{self.ifs['auth']}</a></em><br/>\n"
+        links = (f"<em><strong><a href='{ifs_lk}'>{self.ifs['title']}</a>"
+                 f"</strong></em> | <em><a href='{auth_url}'>"
+                 f"{self.ifs['auth']}</a></em><br/>"
                  )
 
-        return (f"{c.STORY_HEADER.format(ttl=page_title)}\n{p_lk}<br/>\n"
-                f"{links}\n<hr size=1 noshade>\n"
-                f"<h1>{c_title}</h1><br/>\n{c_text}<br/>\n"
-                f"<hr size=1 noshade>\n{links}"
-                f"{n_lk}\n</div>\n</body>\n</html>"
-                )
+        return c.CHAP_TEMPLATE.format(ttl=page_title,
+                                      prev_link=p_lk,
+                                      lks=links,
+                                      chap_title=c_title,
+                                      chap_text=c_text,
+                                      next_link=n_lk)
 
     def get_chapter(self, c_num: int) -> str:
         """
@@ -420,11 +424,8 @@ class StoryWriter(object):
         Write the CSS file used for the files.
         """
 
-        try:
-            with open('style.css', 'w', encoding='utf-8') as f:
-                f.write(c.STORY_CSS)
-        except FileExistsError:
-            pass
+        with open('style.css', 'w', encoding='utf-8') as f:
+            f.write(c.FFN_CSS)
 
     def _write_chapters(self, st: Story, frm: int, to: int):
         """

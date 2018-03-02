@@ -2,8 +2,8 @@
 File: constants.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.0
-File version: 4.1.0
+App version: 5.3.1
+File version: 4.1.5
 
 Contains all the constants needed to make this app works.
 """
@@ -93,70 +93,40 @@ PREVIOUS_REGEX = r'<a href=\'\d*.html\'>Previous \(\d*/(\d*)\)</a> <em>.*</em>'
 NEXT_REGEX = r'<a href=\'\d*.html\'>Next \(\d*/(\d*)\)</a> <em>.*</em>'
 
 ###############################################################################
-# Following are some css stylesheet and html headers
+# Base URLs
 
-# The CSS for each story file and the infos file.
-STORY_CSS = """\
-*, body {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    font-size: 1.0em;
-    font-family : 'Helvetica', Arial, Verdana, sans-serif;
-    text-rendering: optimizeLegibility;
-    -webkit-text-size-adjust: none;
-    line-height: normal;
-    word-wrap: break-word;
-    background-color: #dfdfdf;
-    text-align: justify;
-    min-width: 25em;
-    max-width: 30em;
-}
-strong { font-weight: bold }
-em { font-style: italic }
-h1 {
-    font-size: 1.5em;
-    text-align: left;
-}
-a {
-    color: #005b96;
-    font-size: 1.25em;
-}
-.content {
-    margin: 0.2em 0.5em 0.8em 0.5em;
-    padding:0 0.5em 0 0.5em;
-}
-"""
+# The root url to access to fanfiction.net stories.
+ROOT_URL = "https://www.fanfiction.net/s/"
 
-# The header of each story file and infos file written by this program.
-# NOTE: This is a 'format-able' string.
-STORY_HEADER = """<!DOCTYPE html>
-<html>
+# The root url to access to fanfiction.net authors.
+AUTH_URL = "https://www.fanfiction.net/u/"
 
-<head>
-    <meta charset="utf-8" />
-    <title>{ttl}</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+###############################################################################
+# Following are some css stylesheet and html headers/template
 
-<body>
-<div role='main' class='content' id='storytext' align=center>
-"""
-
+# The header of each stat file written by this program.
 STATS_HEADER = """<!DOCTYPE html>
 <html>
 
 <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <base>
     <style>
         * {
-            font-family : 'Helvetica', Arial, Verdana, sans-serif;
-            font-size: 1.0em;
+            font-family: -apple-system-font, 'Helvetica', Arial, Verdana, sans-serif;
             text-align: left;
-            background-color: #dfdfdf;
+            color: #C9C9C9;
+            background-color: #505050;
+            max-width: 100%;
+            text-rendering: optimizeLegibility;
         }
         h1 { font-size: 1.5em; }
-        a { color: #005b96; }
+        a {
+            color: #69a5ff;
+            font-size: 1.3em;
+            margin: 0.1em;
+        }
         div { padding: 0; }
         em { font-size: 0.95em; }
         .story, .universe {
@@ -178,22 +148,151 @@ STATS_HEADER = """<!DOCTYPE html>
             width: 100%;
             word-wrap: break-word;
             font-style: italic;
+            font-size: 1.05em;
         }
-        .inprogress { color: #bf0000; font-size: 0.95em; }
-        .complete { color: #008000; font-size: 0.95em; }
-        .uni_clr { color:#660066; font-size: 0.95em; }
-        .counts_clr { color:#009688; }
+        .inprogress { color: #f04141; }
+        .complete { color: #1fab1f; }
+        .uni_clr { color: #eb6fff; }
+        .counts_clr { color: #009688; }
     </style>
 </head>
 
 <body>
 """
 
-###############################################################################
-# Miscellaneous
+# The template for each infos file written by this program.
+# NOTE: This is a 'format-able' string.
+INFOS_TEMPLATE = """<!DOCTYPE html>
+<html>
 
-# The root url to access to fanfiction.net stories.
-ROOT_URL = "https://www.fanfiction.net/s/"
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <base>
+    <title>{ttl}</title>
+CSS_STYLE_INSERT
+</head>
 
-# The root url to access to fanfiction.net authors.
-AUTH_URL = "https://www.fanfiction.net/u/"
+<body>
+<div role='main' class='content' id='article'>
+    <h1>{ffn_title}</h1>
+    <br/>
+    <em><strong>Last infos update:</strong> {p_date}</em>
+    <br/><br/>
+    <strong>By:</strong> <a href='{auth_url}'>{author}</a>
+    <br/>
+    <strong>URL:</strong> <a href='{ffn_url}'>{ffn_url}</a>
+    <br/><br/>
+    <strong>Universe:</strong> <em>{universe}</em>
+    <br/><br/>
+    <p>{summary}</p>
+    <br/><br/>
+    <strong>Other infos:</strong>
+    <br/>
+    {tk_formatted}
+    <br/>
+    <br/>
+    <strong>Chapters ({chap_count}):</strong>
+    <br/>
+    <ul>
+    {toc}
+    </ul>
+</div>
+</body>
+</html>
+"""
+
+INFOS_CSS = """
+    <style>
+        * {
+            font-family: -apple-system-font, 'Helvetica', Arial, Verdana, sans-serif;
+            text-align: justify;
+            color: #C9C9C9;
+            background-color: #505050;
+            max-width: 100%;
+            text-rendering: optimizeLegibility;
+        }
+        h1 {
+            font-size: 1.95552em;
+            text-align: left;
+        }
+        a {
+            color: #69a5ff;
+            font-size: 1.3em;
+            margin: 0.1em;
+        }
+    </style>
+"""
+
+# The template for each story file written by this program.
+# NOTE: This is a 'format-able' string.
+CHAP_TEMPLATE = """<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <base>
+    <title>{ttl}</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div role='main' class='content' id='article'>
+<span>
+{prev_link}
+<br/>
+{lks}
+</span>
+<hr size='1' noshade>
+
+<span>
+<h1 class='title'>{chap_title}</h1>
+</span>
+
+<br/>
+<span class='text'>
+{chap_text}
+</span>
+<br/>
+
+<hr size='1' noshade>
+<span>
+{next_link}
+<br/>
+{lks}
+</span>
+
+</div>
+</body>
+</html>
+"""
+
+# The CSS for each story file and the infos file.
+FFN_CSS = """\
+* {
+    color: #C9C9C9;
+    background-color: #505050;
+    /* Scale down anything larger than our view while maintaining ratios. */
+    max-width: 100%;
+}
+a {
+    color: #69a5ff;
+    font-size: 1.3em;
+    margin: 0.1em;
+}
+.title {
+    font-weight: bold;
+    font-size: 1.95552em;
+    margin-top: 0;
+    margin-bottom: 0em;
+}
+.text {
+    text-align: justify;
+    word-wrap: break-word;
+}
+#article {
+    text-rendering: optimizeLegibility;
+    font-family: -apple-system-font, 'Helvetica', Arial, Verdana, sans-serif;
+}
+"""
