@@ -9,6 +9,9 @@ a {
     font-size: 1.3em;
     margin: 0.1em;
 }
+.small {
+    font-size: 1.15em;
+}
 .title {
     font-weight: bold;
     font-size: 1.95552em;
