@@ -2,8 +2,8 @@
 File: stats.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.1
-File version: 2.1.3
+App version: 5.3.2
+File version: 2.1.4
 
 Contains the class 'Stats' which handles the creation of the statistics.
 """
@@ -106,6 +106,8 @@ class Stats(object):
                           - url: Url.
                           - w_count: Words count.
                           - ratio: Ration (Words count // Chapters count).
+                          - auth: Author.
+                          - tk: Tokens.
             link (str): Can be 'infos' or 'url', indicates if the url put in
                         the stats links to FFN.net or to the story folder
 
@@ -137,11 +139,13 @@ class Stats(object):
 
         return ("\n<div class='story'>\n"
                 f"<div class='s_title'>({pos}) "
-                f"<a href='{url}'>{story['title']}</a>"
+                f"<a href='{url}'>{story['title']}</a> | "
+                f"<strong>{story['auth']}</strong>"
                 f"<br/>\n{universe} — {status}</div>\n"
                 f"<div class='s_words counts_clr'>{w_count} words</div>\n"
                 f"<div class='s_chap counts_clr'>{c_count} chapter{s}</div>\n"
                 f"<div class='s_ratio counts_clr'>~{ratio} w/c</div>\n</div>\n"
+                f"<div class='s_infos'>{story['tk']}</div>\n"
                 f"<div class='s_summary'>    {story['smry']}</div><br/>\n"
                 "<hr size='1' noshade><br/>\n"
                 )
@@ -163,6 +167,8 @@ class Stats(object):
                             - url: Url.
                             - w_count: Words count.
                             - ratio: Ration (Words count // Chapters count).
+                            - auth: Author.
+                            - tk: Tokens.
             unvrs (dict): Associates the number of stories for a universe
                           to this universe.
             counts (tuple): contains the numbers of (in the following order):
@@ -223,6 +229,8 @@ class Stats(object):
                               - url: Url.
                               - w_count: Words count.
                               - ratio: Ration (Words count // Chapters count).
+                              - auth: Author.
+                              - tk: Tokens.
             universes (dict): Associates the number of stories for a universe
                               to this universe.
             counts (tuple): contains the numbers of (in the following order):
@@ -261,6 +269,8 @@ class Stats(object):
                 'url': lines[6],
                 'w_count': int(lines[7]),
                 'ratio': int(lines[7]) // int(lines[0]),
+                'auth': lines[8],
+                'tk': lines[9]
             }
 
             try:

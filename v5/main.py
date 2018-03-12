@@ -2,7 +2,7 @@
 File: main.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.1
+App version: 5.3.2
 File version: 5.1
 
 Contains the *main* function, which download/update a story.

@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.1
-File version: 2.4.1
+App version: 5.3.2
+File version: 2.5.0
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -296,6 +296,17 @@ class Story(object):
                                            ).replace('CSS_STYLE_INSERT',
                                                      c.INFOS_CSS)
         elif mode == 's':
+
+            # Only keeping what we whant from the tokens
+            tk = self.ifs['tk']
+            patterns = (r' Rated: ',
+                        r' - Words: .*',  # Deleted because not every fanfic
+                                          # has several chapters
+                        r' - Chapters: .*',
+                        )
+            for pattern in patterns:
+                tk = re.sub(pattern, '', tk)
+
             # Informations are ready to be saved in plain text file
             return (f"{self.ifs['c_count']}\n"
                     f"{self.ifs['status'][8:]}\n"
@@ -305,6 +316,8 @@ class Story(object):
                     f"{self.ifs['uni']}\n"
                     f"{self.ifs['url']}\n"
                     f"{self.ifs['w_count']}\n"
+                    f"{self.ifs['auth']}\n"
+                    f"{tk}\n"
                     )
         else:
             raise ValueError(f"'mode' cannot be '{mode}', only 'h' or 's'.")
@@ -356,9 +369,9 @@ class Story(object):
         ifs_lk = f"{self.ifs['t_id']}_infos.html"
 
         # Link to the info file and to the author's page
-        links = (f"<em><strong><a href='{ifs_lk}'>{self.ifs['title']}</a>"
-                 f"</strong></em> | <em><a href='{auth_url}'>"
-                 f"{self.ifs['auth']}</a></em><br/>"
+        links = (f"<span class='small'><em><strong><a href='{ifs_lk}'>"
+                 f"{self.ifs['title']}</a></strong></em> | "
+                 f"<em><a href='{auth_url}'>{self.ifs['auth']}</a></em></span>"
                  )
 
         return c.CHAP_TEMPLATE.format(ttl=page_title,

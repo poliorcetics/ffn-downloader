@@ -2,8 +2,8 @@
 File: constants.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.1
-File version: 4.1.5
+App version: 5.3.2
+File version: 4.1.6
 
 Contains all the constants needed to make this app works.
 """
@@ -111,6 +111,7 @@ STATS_HEADER = """<!DOCTYPE html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale=1">
+    <title>Stats</title>
     <base>
     <style>
         * {
@@ -124,7 +125,7 @@ STATS_HEADER = """<!DOCTYPE html>
         h1 { font-size: 1.5em; }
         a {
             color: #69a5ff;
-            font-size: 1.3em;
+            font-size: 1.35em;
             margin: 0.1em;
         }
         div { padding: 0; }
@@ -148,7 +149,11 @@ STATS_HEADER = """<!DOCTYPE html>
             width: 100%;
             word-wrap: break-word;
             font-style: italic;
-            font-size: 1.05em;
+        }
+        .s_infos {
+            width: 100%;
+            word-wrap: break-word;
+            color: #000000;
         }
         .inprogress { color: #f04141; }
         .complete { color: #1fab1f; }
@@ -258,9 +263,9 @@ CHAP_TEMPLATE = """<!DOCTYPE html>
 
 <hr size='1' noshade>
 <span>
-{next_link}
-<br/>
 {lks}
+<br/>
+{next_link}
 </span>
 
 </div>
@@ -280,6 +285,9 @@ a {
     color: #69a5ff;
     font-size: 1.3em;
     margin: 0.1em;
+}
+.small {
+    font-size: 1.15em;
 }
 .title {
     font-weight: bold;
