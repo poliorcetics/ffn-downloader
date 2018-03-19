@@ -2,8 +2,8 @@
 File: story.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.2
-File version: 2.5.0
+App version: 5.3.3
+File version: 2.5.1
 
 Contains the class 'Story' which handles the infomations and the downloading
 of the chapters of a particular story, and the class 'StoryWriter' which
@@ -302,7 +302,7 @@ class Story(object):
             patterns = (r' Rated: ',
                         r' - Words: .*',  # Deleted because not every fanfic
                                           # has several chapters
-                        r' - Chapters: .*',
+                        r' - Chapters: \d*',
                         )
             for pattern in patterns:
                 tk = re.sub(pattern, '', tk)

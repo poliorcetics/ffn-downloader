@@ -2,8 +2,8 @@
 File: worker.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.2
-File version: 2.3.2
+App version: 5.3.3
+File version: 2.4.0
 
 Contains functions which can be used for real-life use of this app.
 Can also be used directly in a shell, see 'python3.6 worker.py help' for help.
@@ -70,7 +70,6 @@ class OnComputer(object):
         Args:
             paths (list): the pathes containing the stories.
         """
-        base_dir = os.getcwd()
 
         for path in paths:
             tls.chdir(self._get_full_path(path))
@@ -82,8 +81,6 @@ class OnComputer(object):
                 st = story.Story(url)
                 writer.update_infos(st)
                 del st
-
-        os.chdir(base_dir)
 
     def update_stats(self, paths: list, renew=False, main=False):
         """
@@ -117,6 +114,42 @@ class OnComputer(object):
         if main:
             stats.Stats.write_stats(paths2, self.M_PATH, False)
             print('\nMAIN STATS: DONE.')
+
+    def update_infos(self, dic: dict):
+        """
+        Update the informations for each story in each path provided.
+
+        Args:
+            dic (dict): the dictionnary containing the paths as key and the
+                        list of stories as value. Example:
+                           {
+                               '/Users/user/foo': [
+                                   'url_1',
+                                   'url_2',
+                               ],
+                               '/Users/user/bar': [
+                                   'url_3',
+                                   'url_4',
+                               ],
+                           }
+
+        N.B:
+            - Even if the path isn't a full path, the M_PATH variable is used
+            to complete it.
+        """
+
+        paths = sorted(dic.keys())
+
+        for path in paths:
+            tls.chdir(self._get_full_path(path))
+
+            urls = tls.get_urls_from_folder(os.getcwd())
+            writer = story.StoryWriter()
+
+            for url in urls:
+                st = story.Story(url)
+                writer.update_infos(st)
+                del st
 
     def update_stories(self, dic: dict):
         """

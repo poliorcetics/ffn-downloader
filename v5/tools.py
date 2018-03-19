@@ -2,8 +2,8 @@
 File: func_tools.py
 Author: BOURGET Alexis
 License: see LICENSE.txt
-App version: 5.3.2
-File version: 2.5
+App version: 5.3.3
+File version: 2.5.1a
 
 Contains some functions needed to make the app works.
 """
@@ -107,7 +107,7 @@ def get_page(url: str, display=True, max_tries=5) -> str:
             html = page.read().decode('utf-8')
             return re.sub(c.WRONG_SPACES_REGEX, ' ', html)
     else:
-        raise Exception('Error not encountered yet.')
+        raise Exception(f'[ERROR]: {max_tries} tries done without success.')
 
 
 def display_num(num: float) -> (str):
