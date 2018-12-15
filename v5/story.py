@@ -69,7 +69,8 @@ class Story(object):
                              "story.")
 
         try:
-            page = tls.get_page(url)
+            # Ensure the url used is not a mobile one after that
+            page = tls.get_page(url.replace('://m', '://www'))
         except urllib.error.HTTPError as e:
             raise e
 

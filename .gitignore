@@ -37,8 +37,8 @@
 ehthumbs.db
 Thumbs.db
 
-# App generated files #
-#######################
+# App generated files and folders #
+###################################
 .idea
 __pycache__
 
